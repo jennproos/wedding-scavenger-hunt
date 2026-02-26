@@ -57,6 +57,19 @@ Scan validation: compare scanned token against `stages[session.current_stage]["q
 
 Routes: `/` → Home, `/game` → Game, `/final` → Final.
 
+## Development Philosophy
+
+### Test-Driven Development
+
+TDD is a core principle. Always follow this cycle:
+
+1. Write the test first.
+2. Run it and verify it fails.
+3. Implement the code.
+4. Run the test again and verify it passes.
+
+Never implement a feature without a failing test first.
+
 ## Key Design Decisions
 - **No login.** Sessions identified by UUID stored in localStorage.
 - **Stage tokens are UUIDs**, not sequential or guessable.
