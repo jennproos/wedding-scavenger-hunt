@@ -23,3 +23,7 @@ class ScanResponse(BaseModel):
     message: str
     next_clue: Optional[str] = None
     completed: bool = False
+
+
+class DevRequest(BaseModel):
+    session_id: str

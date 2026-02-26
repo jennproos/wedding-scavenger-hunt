@@ -30,3 +30,23 @@ export async function scanToken(
   if (!res.ok) throw new Error(`Scan failed: ${res.status}`)
   return res.json() as Promise<ScanResponse>
 }
+
+export async function devAdvance(session_id: string): Promise<ScanResponse> {
+  const res = await fetch(`${API_URL}/dev/advance`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id }),
+  })
+  if (!res.ok) throw new Error(`Dev advance failed: ${res.status}`)
+  return res.json() as Promise<ScanResponse>
+}
+
+export async function devBack(session_id: string): Promise<ScanResponse> {
+  const res = await fetch(`${API_URL}/dev/back`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id }),
+  })
+  if (!res.ok) throw new Error(`Dev back failed: ${res.status}`)
+  return res.json() as Promise<ScanResponse>
+}

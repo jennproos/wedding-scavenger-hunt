@@ -143,6 +143,31 @@ button:disabled {
   opacity: 0.7;
 }
 
+/* Dev controls */
+.dev-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 2px dashed rgba(245, 240, 232, 0.3);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  opacity: 0.6;
+}
+
+.dev-controls button {
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+}
+
+.dev-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-button);
+  text-transform: uppercase;
+}
+
 /* Confetti */
 .confetti {
   position: fixed;

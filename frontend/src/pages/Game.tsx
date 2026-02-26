@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClueCard } from '../components/ClueCard'
 import { QRScanner } from '../components/QRScanner'
-import { scanToken } from '../api/client'
+import { scanToken, devAdvance, devBack } from '../api/client'
 import { useSession } from '../context/SessionContext'
 
 export function Game() {
@@ -10,6 +10,8 @@ export function Game() {
   const { session, setSession } = useSession()
   const [error, setError] = useState<string | null>(null)
   const [scanning, setScanning] = useState(false)
+
+  const DEV = import.meta.env.VITE_DEV_OVERRIDE === 'true'
 
   const handleScan = useCallback(
     async (token: string) => {
@@ -37,6 +39,35 @@ export function Game() {
     [session, scanning, setSession, navigate],
   )
 
+  const handleDevAdvance = useCallback(async () => {
+    if (!session) return
+    const result = await devAdvance(session.session_id)
+    if (!result.success) {
+      setError(result.message)
+      return
+    }
+    if (result.completed) {
+      setSession({ ...session, completed: true })
+      navigate('/final')
+      return
+    }
+    if (result.next_clue) {
+      setSession({ ...session, current_clue: result.next_clue })
+    }
+  }, [session, setSession, navigate])
+
+  const handleDevBack = useCallback(async () => {
+    if (!session) return
+    const result = await devBack(session.session_id)
+    if (!result.success) {
+      setError(result.message)
+      return
+    }
+    if (result.next_clue) {
+      setSession({ ...session, current_clue: result.next_clue })
+    }
+  }, [session, setSession])
+
   if (!session) {
     return (
       <div className="page">
@@ -50,6 +81,13 @@ export function Game() {
       <ClueCard clue={session.current_clue} />
       {error && <p className="error-message">{error}</p>}
       <QRScanner onScan={handleScan} />
+      {DEV && (
+        <div className="dev-controls">
+          <span className="dev-label">DEV</span>
+          <button onClick={handleDevBack}>← Back</button>
+          <button onClick={handleDevAdvance}>Skip →</button>
+        </div>
+      )}
     </div>
   )
 }

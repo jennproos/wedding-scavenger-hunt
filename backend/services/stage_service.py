@@ -24,3 +24,11 @@ def get_next_stage_id(stage_id: int) -> Optional[int]:
 
 def is_final_stage(stage_id: int) -> bool:
     return stages[stage_id]["next"] is None
+
+
+def get_prev_stage_id(stage_id: int) -> Optional[int]:
+    """Return the stage whose next == stage_id, or None if at stage 1."""
+    for sid, data in stages.items():
+        if data["next"] == stage_id:
+            return sid
+    return None
