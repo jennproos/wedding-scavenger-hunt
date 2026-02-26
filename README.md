@@ -4,7 +4,7 @@ A wedding scavenger hunt web app for guests to play on their phones. Guests scan
 
 **Stack:** FastAPI (Python) + React (TypeScript/Vite)
 
-See [PLAN.MD](PLAN.MD) for full architecture and design details.
+See [plan.md](plan.md) for full architecture and design details.
 
 ## Name Ideas
 
