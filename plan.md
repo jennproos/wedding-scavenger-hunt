@@ -119,31 +119,21 @@ class ScanResponse(BaseModel):
 
 ### 4.3 Stage Configuration
 
-`stage_data.py`
+`stage_data.py` — **5 stages** (gift table → bar → photo area → dance floor → hidden cat station)
 
-```python
-import uuid
+On first import, UUIDs are generated and written to `stages.json`. On subsequent imports, tokens are loaded from `stages.json` — never regenerated. **`stages.json` must be committed to git.**
 
-stages = {
-    1: {
-        "clue": "Before the dancing and the cheer...",
-        "qr_token": str(uuid.uuid4()),
-        "next": 2
-    },
-    2: {
-        "clue": "Where drinks are poured...",
-        "qr_token": str(uuid.uuid4()),
-        "next": 3
-    },
-    3: {
-        "clue": "Two tiny rulers of our home...",
-        "qr_token": str(uuid.uuid4()),
-        "next": None
-    }
-}
-```
+**Stage clues:**
 
-> **Warning:** Persist these UUIDs after generation (store in JSON or DB). Do NOT regenerate on server restart.
+| Stage | Location | Clue (opening lines) |
+|-------|----------|----------------------|
+| 1 | Gift table | "Before the dancing and the cheer, / there's a place for words sincere…" |
+| 2 | Bar | "Love takes bravery — this much is true. / Sometimes it starts with a drink or two…" |
+| 3 | Photo area | "Some nights fade, but not this one. / We're saving proof of all this fun…" |
+| 4 | Dance floor | "When the music starts and shoes come off, / grace disappears and moves get soft…" |
+| 5 | Cat station | "Two tiny rulers of our domain, / soft of paw and loud of reign…" |
+
+> **Warning:** `stages.json` is the source of truth for all printed QR codes. Losing it = reprinting everything.
 
 ### 4.4 Session Storage Strategy
 
@@ -355,21 +345,48 @@ Print and place at venue.
 - Rate limiting
 - Analytics
 
-## 12. Testing Requirements
+## 12. Test-Driven Development
 
-### Backend
+### TDD Cycle
 
-Unit test:
+All features must follow this cycle — no exceptions:
 
-- Correct stage progression
-- Early stage scan rejected
-- Completed session locked
+1. **Write the test first.** Define the expected behavior before writing any implementation code.
+2. **Run it and verify it fails.** Confirm the test fails for the right reason (not a syntax error or import failure).
+3. **Implement the minimum code** to make the test pass.
+4. **Run the test again and verify it passes.**
+5. **Refactor** if needed, keeping tests green.
 
-### Frontend
+Never implement a feature without a failing test first.
 
-- QR scan success
-- Wrong scan error
-- Session persistence across refresh
+### Backend Test Cases
+
+Use `pytest`. Tests live in `backend/tests/`.
+
+- `POST /start` returns a valid `session_id` and `clue_text`
+- `POST /scan` with correct token advances session and returns next clue
+- `POST /scan` with wrong token returns a playful error, does not advance stage
+- `POST /scan` on a completed session returns an appropriate response
+- Stage tokens are UUIDs and are not sequential or guessable
+
+### Frontend Test Cases
+
+Use Vitest + React Testing Library. Tests live in `frontend/src/__tests__/`.
+
+- QR scan success updates clue and advances UI state
+- Wrong scan displays a friendly error message
+- Session state persists across page refresh (localStorage)
+- Completed session redirects to `/final`
+
+### Running Tests
+
+```bash
+# Backend
+cd backend && pytest
+
+# Frontend
+cd frontend && npm test
+```
 
 ## 13. Future-Proofing Notes
 
