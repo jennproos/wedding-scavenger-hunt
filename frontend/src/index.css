@@ -44,9 +44,55 @@ a {
 }
 
 /* Home */
-.home-page h1 {
-  font-size: 2.4rem;
+.home-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.home-date {
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.75;
   margin: 0;
+}
+
+.home-names {
+  font-size: 3.2rem;
+  font-weight: 200;
+  letter-spacing: 0.04em;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.home-subtitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin: 0;
+}
+
+/* Home button (secondary, top-left of game page) */
+.btn-home {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  background: transparent;
+  border: 1.5px solid rgba(245, 240, 232, 0.3);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 8px;
+  opacity: 0.7;
+}
+
+.btn-home:hover {
+  opacity: 1;
 }
 
 /* Buttons */
@@ -93,6 +139,11 @@ button:disabled {
   color: #f5c6a0;
   font-size: 1.1rem;
   margin: 0;
+}
+
+/* Game page */
+.game-page {
+  position: relative;
 }
 
 /* Final page */

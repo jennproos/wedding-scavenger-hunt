@@ -5,10 +5,16 @@ import { useSession } from '../context/SessionContext'
 
 export function Home() {
   const navigate = useNavigate()
-  const { setSession } = useSession()
+  const { session, setSession } = useSession()
   const [loading, setLoading] = useState(false)
 
+  const hasSession = session !== null && !session.completed
+
   async function handleStart() {
+    if (hasSession) {
+      navigate('/game')
+      return
+    }
     setLoading(true)
     try {
       const data = await startGame()
@@ -25,10 +31,13 @@ export function Home() {
 
   return (
     <div className="page home-page">
-      <h1>Wedding Scavenger Hunt</h1>
-      <p>Ready to explore? Your adventure begins here.</p>
+      <div className="home-hero">
+        <p className="home-date">May 9, 2026</p>
+        <h1 className="home-names">Jenn &amp; Cole</h1>
+        <p className="home-subtitle">Wedding Scavenger Hunt</p>
+      </div>
       <button onClick={handleStart} disabled={loading}>
-        {loading ? 'Starting…' : 'Start the Hunt'}
+        {hasSession ? 'Return to the Hunt' : (loading ? 'Starting…' : 'Start the Hunt')}
       </button>
     </div>
   )

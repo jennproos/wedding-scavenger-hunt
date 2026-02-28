@@ -5,9 +5,10 @@ import { QRScanner } from '../components/QRScanner'
 import { scanToken, devAdvance, devBack } from '../api/client'
 import { useSession } from '../context/SessionContext'
 
+
 export function Game() {
   const navigate = useNavigate()
-  const { session, setSession } = useSession()
+  const { session, setSession, clearSession } = useSession()
   const [error, setError] = useState<string | null>(null)
   const [scanning, setScanning] = useState(false)
 
@@ -76,8 +77,14 @@ export function Game() {
     )
   }
 
+  function handleHome() {
+    clearSession()
+    navigate('/')
+  }
+
   return (
     <div className="page game-page">
+      <button className="btn-home" onClick={handleHome}>← Home</button>
       <ClueCard clue={session.current_clue} />
       {error && <p className="error-message">{error}</p>}
       <QRScanner onScan={handleScan} />

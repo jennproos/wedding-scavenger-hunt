@@ -30,6 +30,7 @@ function renderGame(clue = 'Find the gift table') {
     <MemoryRouter initialEntries={['/game']}>
       <SessionProvider>
         <Routes>
+          <Route path="/" element={<div data-testid="home-page" />} />
           <Route path="/game" element={<Game />} />
           <Route path="/final" element={<div data-testid="final-page" />} />
         </Routes>
@@ -44,6 +45,20 @@ beforeEach(() => {
   vi.mocked(scanToken).mockReset()
   vi.mocked(devAdvance).mockReset()
   vi.mocked(devBack).mockReset()
+})
+
+test('renders a home button', () => {
+  renderGame()
+  expect(screen.getByRole('button', { name: /← home/i })).toBeInTheDocument()
+})
+
+test('home button clears session and navigates to home', async () => {
+  renderGame()
+  fireEvent.click(screen.getByRole('button', { name: /← home/i }))
+  await waitFor(() => {
+    expect(screen.getByTestId('home-page')).toBeInTheDocument()
+  })
+  expect(localStorage.getItem('scavenger_session')).toBeNull()
 })
 
 test('displays the current clue', () => {
