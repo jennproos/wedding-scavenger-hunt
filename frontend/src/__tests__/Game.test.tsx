@@ -97,6 +97,7 @@ describe('dev controls', () => {
   })
 
   test('dev panel not rendered without VITE_DEV_OVERRIDE', () => {
+    vi.stubEnv('VITE_DEV_OVERRIDE', 'false')
     renderGame()
     expect(screen.queryByText('Skip →')).not.toBeInTheDocument()
     expect(screen.queryByText('← Back')).not.toBeInTheDocument()

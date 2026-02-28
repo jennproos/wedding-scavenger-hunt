@@ -7,17 +7,22 @@ interface QRScannerProps {
 
 export function QRScanner({ onScan }: QRScannerProps) {
   const scannerRef = useRef<Html5QrcodeScanner | null>(null)
+  const onScanRef = useRef(onScan)
 
   useEffect(() => {
+    onScanRef.current = onScan
+  })
+
+  useEffect(() => {
+    if (scannerRef.current) return
+
     const scanner = new Html5QrcodeScanner(
       'qr-reader',
       { fps: 10, qrbox: { width: 250, height: 250 } },
       false,
     )
     scanner.render(
-      (decodedText) => {
-        onScan(decodedText)
-      },
+      (decodedText) => onScanRef.current(decodedText),
       () => {
         // Scan error — ignore, camera keeps trying
       },
@@ -25,9 +30,10 @@ export function QRScanner({ onScan }: QRScannerProps) {
     scannerRef.current = scanner
 
     return () => {
-      scanner.clear().catch(() => undefined)
+      scannerRef.current?.clear().catch(() => undefined)
+      scannerRef.current = null
     }
-  }, [onScan])
+  }, [])
 
   return <div id="qr-reader" data-testid="qr-scanner-container" />
 }
