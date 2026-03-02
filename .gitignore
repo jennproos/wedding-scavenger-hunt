@@ -10,9 +10,6 @@ build/
 venv/
 .env
 
-# QR code PNGs (regeneratable from stages.json)
-backend/qr_codes/
-
 # Node / Frontend
 node_modules/
 frontend/dist/
