@@ -4,6 +4,7 @@ import { ClueCard } from '../components/ClueCard'
 import { QRScanner } from '../components/QRScanner'
 import { scanToken, devAdvance, devBack } from '../api/client'
 import { useSession } from '../context/SessionContext'
+import swirlyArrow from '../assets/stickers/Swirly_Arrow.png'
 
 
 export function Game() {
@@ -84,7 +85,9 @@ export function Game() {
 
   return (
     <div className="page game-page">
-      <button className="btn-home" onClick={handleHome}>← Home</button>
+      <button className="btn-home" onClick={handleHome}>
+        <img src={swirlyArrow} alt="Home" />
+      </button>
       <ClueCard clue={session.current_clue} />
       {error && <p className="error-message">{error}</p>}
       <QRScanner onScan={handleScan} />
