@@ -1,6 +1,6 @@
 # Wedding Scavenger Hunt
 
-A wedding scavenger hunt web app for guests to play on their phones. Guests scan physical QR codes placed around the venue to progress through stages, with server-enforced ordering so no one can skip ahead. The final stage reveals a reward screen.
+A wedding scavenger hunt web app for guests to play on their phones. Guests enter 4-digit codes printed on physical cards placed around the venue to progress through stages, with server-enforced ordering so no one can skip ahead. The final stage reveals a reward screen.
 
 **Stack:** FastAPI (Python) + React (TypeScript/Vite)
 
@@ -26,14 +26,13 @@ make dev-frontend  # Vite on http://localhost:5173
 make test          # run all tests (backend + frontend)
 make test-backend  # pytest only
 make test-frontend # vitest only
-make qr            # generate QR code PNGs → backend/qr_codes/
 make lint          # ESLint
 make help          # list all targets
 ```
 
 ### Dev override panel
 
-To skip/go back through stages without scanning real QR codes, enable the dev override in **both** places:
+To skip/go back through stages without entering real codes, enable the dev override in **both** places:
 
 ```bash
 # backend/.env

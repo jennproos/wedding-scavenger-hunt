@@ -4,7 +4,7 @@ PIP := $(VENV)/bin/pip
 PYTEST := $(VENV)/bin/pytest
 UVICORN := $(VENV)/bin/uvicorn
 
-.PHONY: install venv dev-backend dev-frontend test test-backend test-frontend qr lint help
+.PHONY: install venv dev-backend dev-frontend test test-backend test-frontend lint help
 
 help:
 	@echo "Usage: make <target>"
@@ -23,7 +23,6 @@ help:
 	@echo "  test-frontend  Run frontend vitest"
 	@echo ""
 	@echo "Other"
-	@echo "  qr             Generate QR code PNGs in backend/qr_codes/"
 	@echo "  lint           Run frontend ESLint"
 
 install: venv
@@ -46,9 +45,6 @@ test-backend: venv
 
 test-frontend:
 	cd frontend && npm test
-
-qr: venv
-	cd backend && $(abspath $(PYTHON)) qr_generator.py
 
 lint:
 	cd frontend && npm run lint
