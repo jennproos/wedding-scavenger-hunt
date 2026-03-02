@@ -18,7 +18,7 @@ HOSTED_ZONE_ID = "Z02192831Z3UKRWI2NPD8"         # Route 53 hosted zone ID for j
 FRONTEND_SUBDOMAIN = "wedding"         # → wedding.jennproos.com
 BACKEND_SUBDOMAIN = "wedding-api"      # → wedding-api.jennproos.com
 KEY_PAIR_NAME = "wedding-hunt"        # EC2 key pair name (create in AWS Console first)
-REPO_URL = "https://github.com/you/wedding-scavenger-hunt.git"
+REPO_URL = "https://github.com/jennproos/wedding-scavenger-hunt.git"
 # ──────────────────────────────────────────────────────────────────────────────
 
 
@@ -47,7 +47,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/ec2-user/app/backend
-ExecStart=/usr/local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+ExecStart=/home/ec2-user/.local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
 Restart=always
 User=ec2-user
 

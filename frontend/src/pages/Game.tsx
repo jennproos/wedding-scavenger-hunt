@@ -52,7 +52,7 @@ export function Game() {
         setFadingOut(false)
         setClueKey(k => k + 1)
         setSession({
-          ...pending.session,
+          ...pending.session!,
           current_clue: pending.next_clue!,
           is_final_clue: pending.is_final_clue,
           clue_number: (pending.session!.clue_number ?? 1) + 1,
