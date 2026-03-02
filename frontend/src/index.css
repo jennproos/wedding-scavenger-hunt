@@ -308,8 +308,8 @@ button:hover {
   cursor: pointer;
   opacity: 0.8;
   animation:
-    fade-in 1s ease-out 3.2s both,
-    btn-idle-wiggle 3s ease-in-out 5.5s infinite;
+    fade-in 1s ease-out 4.5s both,
+    btn-idle-wiggle 3s ease-in-out 6.8s infinite;
   transition: opacity 0.2s;
 }
 
@@ -326,7 +326,7 @@ button:hover {
   position: absolute;
   top: 47%;
   left: 62%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scaleX(0.78);
   font-family: 'Pacifico', cursive;
   font-size: 0.95rem;
   color: var(--color-text);

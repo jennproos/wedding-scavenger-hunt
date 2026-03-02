@@ -4,7 +4,10 @@ PIP := $(VENV)/bin/pip
 PYTEST := $(VENV)/bin/pytest
 UVICORN := $(VENV)/bin/uvicorn
 
-.PHONY: install venv dev-backend dev-frontend test test-backend test-frontend lint help
+INFRA_VENV := infra/.venv
+INFRA_PIP := $(INFRA_VENV)/bin/pip
+
+.PHONY: install venv infra-venv dev-backend dev-frontend test test-backend test-frontend lint help
 
 help:
 	@echo "Usage: make <target>"
@@ -32,7 +35,11 @@ venv:
 	python3 -m venv $(VENV)
 	$(PIP) install -r backend/requirements.txt
 
-dev-backend: venv
+infra-venv:
+	python3 -m venv $(INFRA_VENV)
+	$(INFRA_PIP) install -r infra/requirements.txt -r infra/requirements-dev.txt
+
+dev-backend: venv infra-venv
 	cd backend && $(abspath $(UVICORN)) main:app --reload
 
 dev-frontend:
