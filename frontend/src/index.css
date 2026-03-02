@@ -377,6 +377,38 @@ button:disabled {
   opacity: 0.7;
 }
 
+/* Code input */
+.code-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.code-digits {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.code-digit {
+  width: 3rem;
+  height: 3.5rem;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--color-bg);
+  background-color: var(--color-text);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.code-digit:focus {
+  border-color: var(--color-button);
+}
+
 /* Dev controls */
 .dev-controls {
   display: flex;

@@ -1,5 +1,5 @@
 import json
-import uuid
+import random
 from pathlib import Path
 
 _STAGES_JSON = Path(__file__).parent / "stages.json"
@@ -69,7 +69,7 @@ def _load_or_create_tokens() -> dict:
         with open(_STAGES_JSON) as f:
             return json.load(f)
 
-    tokens = {str(stage_id): str(uuid.uuid4()) for stage_id in _STAGE_DEFINITIONS}
+    tokens = {str(stage_id): str(random.randint(1000, 9999)) for stage_id in _STAGE_DEFINITIONS}
     with open(_STAGES_JSON, "w") as f:
         json.dump(tokens, f, indent=2)
     return tokens
@@ -81,7 +81,7 @@ def _build_stages() -> dict:
     for stage_id, definition in _STAGE_DEFINITIONS.items():
         result[stage_id] = {
             "clue": definition["clue"],
-            "qr_token": tokens[str(stage_id)],
+            "code": tokens[str(stage_id)],
             "next": definition["next"],
         }
     return result

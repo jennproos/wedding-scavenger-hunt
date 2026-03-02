@@ -15,7 +15,7 @@ def get_clue(stage_id: int) -> str:
 
 
 def get_token(stage_id: int) -> str:
-    return stages[stage_id]["qr_token"]
+    return stages[stage_id]["code"]
 
 
 def get_next_stage_id(stage_id: int) -> Optional[int]:

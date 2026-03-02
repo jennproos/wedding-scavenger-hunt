@@ -55,7 +55,7 @@ async def test_dev_advance_on_final_stage_marks_completed(dev_client):
 
     # Scan through stages 1–4 to reach stage 5 (the final stage)
     for stage_id in range(1, 5):
-        token = stages[stage_id]["qr_token"]
+        token = stages[stage_id]["code"]
         await dev_client.post("/scan", json={"session_id": session_id, "token": token})
 
     # Now dev-advance from the final stage
@@ -73,7 +73,7 @@ async def test_dev_back_moves_to_prev_stage(dev_client):
     session_id = start.json()["session_id"]
 
     # Advance to stage 2 by scanning stage 1 token
-    token = stages[1]["qr_token"]
+    token = stages[1]["code"]
     await dev_client.post("/scan", json={"session_id": session_id, "token": token})
 
     # Now go back
@@ -105,7 +105,7 @@ async def test_dev_back_on_completed_resets_and_goes_back(dev_client):
 
     # Complete all stages
     for stage_id in range(1, 6):
-        token = stages[stage_id]["qr_token"]
+        token = stages[stage_id]["code"]
         await dev_client.post("/scan", json={"session_id": session_id, "token": token})
 
     # Go back from completed state

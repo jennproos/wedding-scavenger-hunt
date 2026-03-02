@@ -3,12 +3,12 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { vi } from 'vitest'
 import { SessionProvider } from '../context/SessionContext'
 
-// Mock QRScanner so we control when onScan fires
-let capturedOnScan: ((token: string) => void) | null = null
-vi.mock('../components/QRScanner', () => ({
-  QRScanner: ({ onScan }: { onScan: (token: string) => void }) => {
-    capturedOnScan = onScan
-    return <div data-testid="mock-qr-scanner" />
+// Mock CodeInput so we control when onSubmit fires
+let capturedOnScan: ((code: string) => void) | null = null
+vi.mock('../components/CodeInput', () => ({
+  CodeInput: ({ onSubmit }: { onSubmit: (code: string) => void }) => {
+    capturedOnScan = onSubmit
+    return <div data-testid="mock-code-input" />
   },
 }))
 
@@ -49,12 +49,12 @@ beforeEach(() => {
 
 test('renders a home button', () => {
   renderGame()
-  expect(screen.getByRole('button', { name: /← home/i })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: /home/i })).toBeInTheDocument()
 })
 
 test('home button clears session and navigates to home', async () => {
   renderGame()
-  fireEvent.click(screen.getByRole('button', { name: /← home/i }))
+  fireEvent.click(screen.getByRole('button', { name: /home/i }))
   await waitFor(() => {
     expect(screen.getByTestId('home-page')).toBeInTheDocument()
   })

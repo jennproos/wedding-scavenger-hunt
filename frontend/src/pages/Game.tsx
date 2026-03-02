@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClueCard } from '../components/ClueCard'
-import { QRScanner } from '../components/QRScanner'
+import { CodeInput } from '../components/CodeInput'
 import { scanToken, devAdvance, devBack } from '../api/client'
 import { useSession } from '../context/SessionContext'
 import swirlyArrow from '../assets/stickers/Swirly_Arrow.png'
@@ -11,34 +11,28 @@ export function Game() {
   const navigate = useNavigate()
   const { session, setSession, clearSession } = useSession()
   const [error, setError] = useState<string | null>(null)
-  const [scanning, setScanning] = useState(false)
 
   const DEV = import.meta.env.VITE_DEV_OVERRIDE === 'true'
 
   const handleScan = useCallback(
-    async (token: string) => {
-      if (!session || scanning) return
-      setScanning(true)
+    async (code: string) => {
+      if (!session) return
       setError(null)
-      try {
-        const result = await scanToken(session.session_id, token)
-        if (!result.success) {
-          setError(result.message)
-          return
-        }
-        if (result.completed) {
-          setSession({ ...session, completed: true })
-          navigate('/final')
-          return
-        }
-        if (result.next_clue) {
-          setSession({ ...session, current_clue: result.next_clue })
-        }
-      } finally {
-        setScanning(false)
+      const result = await scanToken(session.session_id, code)
+      if (!result.success) {
+        setError(result.message)
+        return
+      }
+      if (result.completed) {
+        setSession({ ...session, completed: true })
+        navigate('/final')
+        return
+      }
+      if (result.next_clue) {
+        setSession({ ...session, current_clue: result.next_clue })
       }
     },
-    [session, scanning, setSession, navigate],
+    [session, setSession, navigate],
   )
 
   const handleDevAdvance = useCallback(async () => {
@@ -90,7 +84,7 @@ export function Game() {
       </button>
       <ClueCard clue={session.current_clue} />
       {error && <p className="error-message">{error}</p>}
-      <QRScanner onScan={handleScan} />
+      <CodeInput onSubmit={handleScan} />
       {DEV && (
         <div className="dev-controls">
           <span className="dev-label">DEV</span>

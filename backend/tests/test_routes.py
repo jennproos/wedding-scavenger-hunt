@@ -35,7 +35,7 @@ async def test_scan_correct_token_advances_stage(client):
     start = await client.post("/start")
     session_id = start.json()["session_id"]
 
-    stage1_token = stages[1]["qr_token"]
+    stage1_token = stages[1]["code"]
     scan = await client.post("/scan", json={"session_id": session_id, "token": stage1_token})
     assert scan.status_code == 200
     data = scan.json()
@@ -68,7 +68,7 @@ async def test_scan_wrong_token_does_not_advance_stage(client):
     await client.post("/scan", json={"session_id": session_id, "token": "wrong-token"})
 
     # Correct stage 1 token should still work
-    stage1_token = stages[1]["qr_token"]
+    stage1_token = stages[1]["code"]
     scan = await client.post("/scan", json={"session_id": session_id, "token": stage1_token})
     data = scan.json()
     assert data["success"] is True
@@ -87,7 +87,7 @@ async def test_complete_all_stages_reaches_completed(client):
     session_id = start.json()["session_id"]
 
     for stage_id in range(1, 6):
-        token = stages[stage_id]["qr_token"]
+        token = stages[stage_id]["code"]
         scan = await client.post("/scan", json={"session_id": session_id, "token": token})
         data = scan.json()
         assert data["success"] is True
@@ -104,11 +104,11 @@ async def test_scan_already_completed_session(client):
 
     # Complete all stages
     for stage_id in range(1, 6):
-        token = stages[stage_id]["qr_token"]
+        token = stages[stage_id]["code"]
         await client.post("/scan", json={"session_id": session_id, "token": token})
 
     # Scan again on completed session
-    any_token = stages[1]["qr_token"]
+    any_token = stages[1]["code"]
     scan = await client.post("/scan", json={"session_id": session_id, "token": any_token})
     assert scan.status_code == 200
     data = scan.json()
