@@ -1,11 +1,38 @@
 import { useRef, useState } from 'react'
+import { ChampagnePop } from './ChampagnePop'
+
+type Status = 'idle' | 'submitting' | 'success' | 'error' | 'incomplete'
 
 interface CodeInputProps {
-  onSubmit: (code: string) => void
+  onSubmit: (code: string) => Promise<boolean>
+  onSuccessReady?: () => void
 }
 
-export function CodeInput({ onSubmit }: CodeInputProps) {
+function LockIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="36"
+      height="36"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      {open
+        ? <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+        : <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      }
+    </svg>
+  )
+}
+
+export function CodeInput({ onSubmit, onSuccessReady }: CodeInputProps) {
   const [digits, setDigits] = useState(['', '', '', ''])
+  const [status, setStatus] = useState<Status>('idle')
+  const [showChampagne, setShowChampagne] = useState(false)
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -14,6 +41,7 @@ export function CodeInput({ onSubmit }: CodeInputProps) {
   ]
 
   const allFilled = digits.every(d => d !== '')
+  const isOpen = allFilled && status === 'idle'
 
   function handleChange(index: number, value: string) {
     const digit = value.replace(/\D/g, '').slice(-1)
@@ -31,14 +59,40 @@ export function CodeInput({ onSubmit }: CodeInputProps) {
     }
   }
 
-  function handleSubmit() {
-    if (!allFilled) return
-    onSubmit(digits.join(''))
-    setDigits(['', '', '', ''])
-    inputRefs[0].current?.focus()
+  async function handleSubmit() {
+    if (status !== 'idle') return
+    if (!allFilled) {
+      setStatus('incomplete')
+      await new Promise(r => setTimeout(r, 600))
+      setStatus('idle')
+      return
+    }
+    setStatus('submitting')
+    const [success] = await Promise.all([
+      onSubmit(digits.join('')),
+      new Promise(r => setTimeout(r, 1200)), // minimum wiggle time
+    ])
+    if (success) {
+      setStatus('success')
+      setShowChampagne(true)
+      await new Promise(r => setTimeout(r, 1400)) // champagne pop + explode
+      setShowChampagne(false)
+      onSuccessReady?.()
+      await new Promise(r => setTimeout(r, 500)) // new clue fades in
+      setDigits(['', '', '', ''])
+      setStatus('idle')
+    } else {
+      setStatus('error')
+      await new Promise(r => setTimeout(r, 800))
+      setDigits(['', '', '', ''])
+      setStatus('idle')
+      inputRefs[0].current?.focus()
+    }
   }
 
   return (
+    <>
+    {showChampagne && <ChampagnePop />}
     <div className="code-input-wrapper">
       <div className="code-digits">
         {digits.map((digit, i) => (
@@ -54,12 +108,19 @@ export function CodeInput({ onSubmit }: CodeInputProps) {
             onChange={e => handleChange(i, e.target.value)}
             onKeyDown={e => handleKeyDown(i, e)}
             aria-label={`Digit ${i + 1}`}
+            disabled={status !== 'idle'}
           />
         ))}
       </div>
-      <button onClick={handleSubmit} disabled={!allFilled}>
-        Unlock
+      <button
+        className={`lock-btn lock-btn--${status}${isOpen ? ' lock-btn--open' : ''}`}
+        onClick={handleSubmit}
+        disabled={status !== 'idle'}
+        aria-label="Unlock"
+      >
+        <LockIcon open={isOpen} />
       </button>
     </div>
+    </>
   )
 }

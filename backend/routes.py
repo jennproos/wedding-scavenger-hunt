@@ -51,7 +51,30 @@ async def scan(request: ScanRequest):
         success=True,
         completed=False,
         next_clue=next_clue,
+        is_final_clue=stage_service.is_final_stage(next_stage_id),
         message="Onward!",
+    )
+
+
+@router.post("/back", response_model=ScanResponse)
+async def back(request: DevRequest):
+    session = session_service.get_session(request.session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    prev_stage_id = stage_service.get_prev_stage_id(session.current_stage)
+    if prev_stage_id is None:
+        return ScanResponse(success=False, message="Already at the beginning!")
+
+    session.current_stage = prev_stage_id
+    session_service.update_session(session)
+    clue = stage_service.get_clue(prev_stage_id)
+    return ScanResponse(
+        success=True,
+        completed=False,
+        next_clue=clue,
+        is_final_clue=stage_service.is_final_stage(prev_stage_id),
+        message="Went back!",
     )
 
 
@@ -91,6 +114,7 @@ async def dev_advance(request: DevRequest):
         success=True,
         completed=False,
         next_clue=next_clue,
+        is_final_clue=stage_service.is_final_stage(next_stage_id),
         message="[DEV] Skipped!",
     )
 

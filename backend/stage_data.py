@@ -1,4 +1,5 @@
 import json
+import os
 import random
 from pathlib import Path
 
@@ -64,14 +65,20 @@ _STAGE_DEFINITIONS = {
 
 
 def _load_or_create_tokens() -> dict:
-    """Load tokens from stages.json, or generate and persist them if missing."""
+    """Load tokens from env vars (STAGE_N_CODE) or stages.json, generating if missing."""
     if _STAGES_JSON.exists():
         with open(_STAGES_JSON) as f:
-            return json.load(f)
+            tokens = json.load(f)
+    else:
+        tokens = {str(stage_id): str(random.randint(1000, 9999)) for stage_id in _STAGE_DEFINITIONS}
+        with open(_STAGES_JSON, "w") as f:
+            json.dump(tokens, f, indent=2)
 
-    tokens = {str(stage_id): str(random.randint(1000, 9999)) for stage_id in _STAGE_DEFINITIONS}
-    with open(_STAGES_JSON, "w") as f:
-        json.dump(tokens, f, indent=2)
+    for stage_id in _STAGE_DEFINITIONS:
+        env_code = os.environ.get(f"STAGE_{stage_id}_CODE")
+        if env_code:
+            tokens[str(stage_id)] = env_code
+
     return tokens
 
 

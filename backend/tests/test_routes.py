@@ -81,6 +81,52 @@ async def test_scan_unknown_session_returns_404(client):
 
 
 @pytest.mark.anyio
+async def test_back_moves_to_prev_stage(client):
+    from stage_data import stages
+    start = await client.post("/start")
+    session_id = start.json()["session_id"]
+
+    token = stages[1]["code"]
+    await client.post("/scan", json={"session_id": session_id, "token": token})
+
+    resp = await client.post("/back", json={"session_id": session_id})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["success"] is True
+    assert data["next_clue"] is not None
+
+
+@pytest.mark.anyio
+async def test_back_on_stage_1_returns_failure(client):
+    start = await client.post("/start")
+    session_id = start.json()["session_id"]
+
+    resp = await client.post("/back", json={"session_id": session_id})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["success"] is False
+
+
+@pytest.mark.anyio
+async def test_scan_advancing_to_final_stage_sets_is_final_clue(client):
+    from stage_data import stages
+    start = await client.post("/start")
+    session_id = start.json()["session_id"]
+
+    for stage_id in range(1, 4):
+        token = stages[stage_id]["code"]
+        await client.post("/scan", json={"session_id": session_id, "token": token})
+
+    # Advance from stage 4 → stage 5 (the final stage)
+    token = stages[4]["code"]
+    scan = await client.post("/scan", json={"session_id": session_id, "token": token})
+    data = scan.json()
+    assert data["success"] is True
+    assert data["completed"] is False
+    assert data["is_final_clue"] is True
+
+
+@pytest.mark.anyio
 async def test_complete_all_stages_reaches_completed(client):
     from stage_data import stages
     start = await client.post("/start")

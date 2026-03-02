@@ -2,17 +2,19 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { startGame } from '../api/client'
 import { useSession } from '../context/SessionContext'
-import cloudSrc from '../assets/stickers/Cloud.svg'
+import cupidArrow from '../assets/stickers/Cupids_Arrow.webp'
 
 export function Home() {
   const navigate = useNavigate()
   const { session, setSession } = useSession()
   const [loading, setLoading] = useState(false)
   const [fadingOut, setFadingOut] = useState(false)
+  const [nudging, setNudging] = useState(false)
 
   const hasSession = session !== null && !session.completed
 
-  async function handleStart() {
+async function handleStart() {
+    setNudging(true)
     setFadingOut(true)
     const fadeDelay = new Promise(resolve => setTimeout(resolve, 500))
     if (hasSession) {
@@ -27,6 +29,8 @@ export function Home() {
         session_id: data.session_id,
         current_clue: data.clue_text,
         completed: false,
+        is_final_clue: false,
+        clue_number: 1,
       })
       navigate('/game')
     } finally {
@@ -41,9 +45,9 @@ export function Home() {
         <h1 className="home-names">Jenn &amp; Cole</h1>
         <p className="home-subtitle">Wedding Scavenger Hunt</p>
       </div>
-      <button onClick={handleStart} disabled={loading}>
-        <img src={cloudSrc} className="cloud-btn-bg" alt="" />
-        <span className="cloud-btn-text">
+      <button className={`btn-start${nudging ? ' btn-start--nudging' : ''}`} onClick={handleStart} disabled={loading}>
+        <img src={cupidArrow} className="btn-start-img" alt="" />
+        <span className="btn-start-text">
           {hasSession ? 'return to the hunt' : 'start the hunt'}
         </span>
       </button>
