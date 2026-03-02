@@ -82,7 +82,7 @@ systemctl enable --now nginx
 """
 
 
-class InfraStack(Stack):
+class WeddingScavengerHuntInfraStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -162,7 +162,7 @@ class InfraStack(Stack):
         backend_sg.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(443), "HTTPS")
         backend_sg.add_ingress_rule(
             ec2.Peer.any_ipv4(), ec2.Port.tcp(22),
-            "SSH — tighten to your IP in the console after deploy",
+            "SSH - tighten to your IP in the console after deploy",
         )
 
         # ── EC2 instance ──────────────────────────────────────────────────────

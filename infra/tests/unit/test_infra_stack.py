@@ -1,12 +1,12 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 
-from infra.infra_stack import InfraStack
+from infra.infra_stack import WeddingScavengerHuntInfraStack
 
 
-def _make_stack() -> InfraStack:
+def _make_stack() -> WeddingScavengerHuntInfraStack:
     app = core.App()
-    return InfraStack(app, "infra")
+    return WeddingScavengerHuntInfraStack(app, "infra")
 
 
 def test_s3_bucket_created():
