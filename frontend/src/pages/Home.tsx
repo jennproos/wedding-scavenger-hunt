@@ -44,7 +44,7 @@ export function Home() {
       <button onClick={handleStart} disabled={loading}>
         <img src={cloudSrc} className="cloud-btn-bg" alt="" />
         <span className="cloud-btn-text">
-          {hasSession ? 'return to the hunt' : (loading ? 'starting…' : 'start the hunt')}
+          {hasSession ? 'return to the hunt' : 'start the hunt'}
         </span>
       </button>
     </div>
