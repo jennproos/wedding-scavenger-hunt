@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { startGame } from '../api/client'
 import { useSession } from '../context/SessionContext'
-import cupidArrow from '../assets/stickers/Cupids_Arrow.webp'
+import heartsPiercedByAnArrow from '../assets/stickers/Hearts_Pierced_By_An_Arrow.svg'
 
 export function Home() {
   const navigate = useNavigate()
@@ -46,7 +46,7 @@ async function handleStart() {
         <p className="home-subtitle">Wedding Scavenger Hunt</p>
       </div>
       <button className={`btn-start${nudging ? ' btn-start--nudging' : ''}`} onClick={handleStart} disabled={loading}>
-        <img src={cupidArrow} className="btn-start-img" alt="" />
+        <img src={heartsPiercedByAnArrow} className="btn-start-img" alt="" />
       </button>
     </div>
   )

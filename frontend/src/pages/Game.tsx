@@ -5,7 +5,7 @@ import { CodeInput } from '../components/CodeInput'
 import { scanToken, devAdvance, devBack, backClue, ApiError } from '../api/client'
 import { useSession } from '../context/SessionContext'
 import swirlyArrow from '../assets/stickers/Swirly_Arrow.png'
-import cupidArrow from '../assets/stickers/Cupids_Arrow.webp'
+import heartsPiercedByAnArrow from '../assets/stickers/Hearts_Pierced_By_An_Arrow.svg'
 import homeIcon from '../assets/stickers/Home.svg'
 
 
@@ -141,7 +141,7 @@ export function Game() {
             }, 400)
           }}
         >
-          <img src={cupidArrow} className="btn-start-img" alt="" />
+          <img src={heartsPiercedByAnArrow} className="btn-start-img" alt="" />
         </button>
       ) : (
         <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
