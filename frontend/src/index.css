@@ -322,18 +322,6 @@ button:hover {
   mix-blend-mode: screen;
 }
 
-.btn-start-text {
-  position: absolute;
-  top: 47%;
-  left: 62%;
-  transform: translate(-50%, -50%) scaleX(0.78);
-  font-family: 'Pacifico', cursive;
-  font-size: 0.95rem;
-  color: var(--color-text);
-  white-space: nowrap;
-  pointer-events: none;
-}
-
 .btn-start--nudging {
   animation: btn-nudge 0.4s ease-out forwards;
   pointer-events: none;

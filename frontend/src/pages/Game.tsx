@@ -142,7 +142,6 @@ export function Game() {
           }}
         >
           <img src={cupidArrow} className="btn-start-img" alt="" />
-          <span className="btn-start-text">you did it!</span>
         </button>
       ) : (
         <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />

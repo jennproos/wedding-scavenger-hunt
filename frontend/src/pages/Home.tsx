@@ -47,9 +47,6 @@ async function handleStart() {
       </div>
       <button className={`btn-start${nudging ? ' btn-start--nudging' : ''}`} onClick={handleStart} disabled={loading}>
         <img src={cupidArrow} className="btn-start-img" alt="" />
-        <span className="btn-start-text">
-          {hasSession ? 'return to the hunt' : 'start the hunt'}
-        </span>
       </button>
     </div>
   )
