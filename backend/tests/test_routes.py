@@ -143,6 +143,20 @@ async def test_complete_all_stages_reaches_completed(client):
 
 
 @pytest.mark.anyio
+async def test_check_session_returns_200_for_known_session(client):
+    start = await client.post("/start")
+    session_id = start.json()["session_id"]
+    resp = await client.get(f"/session/{session_id}")
+    assert resp.status_code == 200
+
+
+@pytest.mark.anyio
+async def test_check_session_returns_404_for_unknown_session(client):
+    resp = await client.get("/session/nonexistent-id")
+    assert resp.status_code == 404
+
+
+@pytest.mark.anyio
 async def test_scan_already_completed_session(client):
     from stage_data import stages
     start = await client.post("/start")

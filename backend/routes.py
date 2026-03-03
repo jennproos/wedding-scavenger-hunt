@@ -56,6 +56,13 @@ async def scan(request: ScanRequest):
     )
 
 
+@router.get("/session/{session_id}")
+async def check_session(session_id: str):
+    if session_service.get_session(session_id) is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {"ok": True}
+
+
 @router.post("/back", response_model=ScanResponse)
 async def back(request: DevRequest):
     session = session_service.get_session(request.session_id)

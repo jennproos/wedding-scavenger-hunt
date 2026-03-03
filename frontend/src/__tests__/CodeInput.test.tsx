@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { vi } from 'vitest'
 import { CodeInput } from '../components/CodeInput'
 
@@ -105,4 +105,38 @@ test('clears inputs after failed submission', async () => {
   fillDigits(inputs)
   fireEvent.click(screen.getByRole('button', { name: /unlock/i }))
   await waitFor(() => inputs.forEach(input => expect(input).toHaveValue('')), { timeout: 3000 })
+})
+
+test('pressing Enter on a digit input submits the code', () => {
+  const onSubmit = vi.fn().mockResolvedValue(true)
+  render(<CodeInput onSubmit={onSubmit} />)
+  const inputs = screen.getAllByRole('textbox')
+  fillDigits(inputs)
+  fireEvent.keyDown(inputs[3], { key: 'Enter' })
+  expect(onSubmit).toHaveBeenCalledWith('1489')
+})
+
+test('lock button has lock-btn--entering class on mount', () => {
+  render(<CodeInput onSubmit={vi.fn().mockResolvedValue(true)} />)
+  const button = screen.getByRole('button', { name: /unlock/i })
+  expect(button).toHaveClass('lock-btn--entering')
+})
+
+test('lock button loses lock-btn--entering class after 2600ms', async () => {
+  vi.useFakeTimers()
+  render(<CodeInput onSubmit={vi.fn().mockResolvedValue(true)} />)
+  const button = screen.getByRole('button', { name: /unlock/i })
+  expect(button).toHaveClass('lock-btn--entering')
+  await act(() => vi.advanceTimersByTimeAsync(2600))
+  expect(button).not.toHaveClass('lock-btn--entering')
+  vi.useRealTimers()
+})
+
+test('pressing Enter with incomplete digits does not call onSubmit', () => {
+  const onSubmit = vi.fn().mockResolvedValue(true)
+  render(<CodeInput onSubmit={onSubmit} />)
+  const inputs = screen.getAllByRole('textbox')
+  fireEvent.change(inputs[0], { target: { value: '1' } })
+  fireEvent.keyDown(inputs[0], { key: 'Enter' })
+  expect(onSubmit).not.toHaveBeenCalled()
 })

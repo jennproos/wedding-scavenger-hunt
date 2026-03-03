@@ -494,6 +494,10 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.lock-btn--entering {
+  animation: fade-in 0.5s ease-out 2.1s both;
+}
+
 .lock-btn--open {
   color: var(--color-text);
 }
@@ -548,9 +552,9 @@ button:disabled {
 
 .code-input-wrapper {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 1.25rem;
+  gap: 0.75rem;
 }
 
 .code-digits {
@@ -720,10 +724,14 @@ button:disabled {
   animation: fade-in 0.8s ease-out 0.6s both;
 }
 
-.game-page .code-input-wrapper,
 .game-page .error-message {
   animation: fade-in 0.8s ease-out 1.3s both;
 }
+
+.game-page .code-digit:nth-child(1) { animation: fade-in 0.5s ease-out 1.3s both; }
+.game-page .code-digit:nth-child(2) { animation: fade-in 0.5s ease-out 1.5s both; }
+.game-page .code-digit:nth-child(3) { animation: fade-in 0.5s ease-out 1.7s both; }
+.game-page .code-digit:nth-child(4) { animation: fade-in 0.5s ease-out 1.9s both; }
 
 .game-page .btn-nav {
   animation: fade-in 0.8s ease-out 2.8s both;

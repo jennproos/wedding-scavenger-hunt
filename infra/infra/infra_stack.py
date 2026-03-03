@@ -50,6 +50,11 @@ WorkingDirectory=/home/ec2-user/app/backend
 ExecStart=/home/ec2-user/.local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
 Restart=always
 User=ec2-user
+Environment=STAGE_1_CODE=1111
+Environment=STAGE_2_CODE=2222
+Environment=STAGE_3_CODE=3333
+Environment=STAGE_4_CODE=4444
+Environment=STAGE_5_CODE=5555
 
 [Install]
 WantedBy=multi-user.target
