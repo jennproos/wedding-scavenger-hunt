@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClueCard } from '../components/ClueCard'
 import { CodeInput } from '../components/CodeInput'
-import { scanToken, devAdvance, devBack, backClue, checkSession, ApiError } from '../api/client'
+import { scanToken, devAdvance, devBack, backClue, ApiError } from '../api/client'
 import { useSession } from '../context/SessionContext'
 import swirlyArrow from '../assets/stickers/Swirly_Arrow.png'
 import heartsPiercedByAnArrow from '../assets/stickers/Hearts_Pierced_By_An_Arrow.svg'
@@ -18,16 +18,6 @@ export function Game() {
   const pendingRef = useRef<{ completed: boolean; next_clue?: string; is_final_clue?: boolean; session: typeof session } | null>(null)
 
   const DEV = import.meta.env.VITE_DEV_OVERRIDE === 'true'
-
-  useEffect(() => {
-    if (!session) return
-    checkSession(session.session_id).then(valid => {
-      if (!valid) {
-        clearSession()
-        navigate('/')
-      }
-    })
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleScan = useCallback(
     async (code: string): Promise<boolean> => {

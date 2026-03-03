@@ -13,11 +13,6 @@ export interface ScanResponse {
   is_final_clue?: boolean
 }
 
-export async function checkSession(session_id: string): Promise<boolean> {
-  const res = await fetch(`${API_URL}/session/${session_id}`)
-  return res.ok
-}
-
 export async function startGame(): Promise<StartResponse> {
   const res = await fetch(`${API_URL}/start`, { method: 'POST' })
   if (!res.ok) throw new Error(`Failed to start game: ${res.status}`)

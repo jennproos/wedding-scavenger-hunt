@@ -7,7 +7,7 @@ UVICORN := $(VENV)/bin/uvicorn
 INFRA_VENV := infra/.venv
 INFRA_PIP := $(INFRA_VENV)/bin/pip
 
-.PHONY: install venv infra-venv dev-backend dev-frontend test test-backend test-frontend lint help
+.PHONY: install venv infra-venv dev-backend dev-frontend test test-backend test-frontend lint deploy-frontend deploy-backend help
 
 help:
 	@echo "Usage: make <target>"
@@ -27,6 +27,8 @@ help:
 	@echo ""
 	@echo "Other"
 	@echo "  lint           Run frontend ESLint"
+	@echo "  deploy-frontend Build and deploy frontend to S3 + CloudFront"
+	@echo "  deploy-backend  SSH deploy backend and restart service"
 
 install: venv
 	cd frontend && npm install
@@ -55,3 +57,9 @@ test-frontend:
 
 lint:
 	cd frontend && npm run lint
+
+deploy-frontend:
+	./scripts/deploy-frontend.sh
+
+deploy-backend:
+	./scripts/deploy-backend.sh

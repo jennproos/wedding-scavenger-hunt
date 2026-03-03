@@ -22,7 +22,6 @@ vi.mock('../api/client', () => ({
   devAdvance: vi.fn(),
   devBack: vi.fn(),
   backClue: vi.fn(),
-  checkSession: vi.fn().mockResolvedValue(true),
   ApiError: class ApiError extends Error {
     status: number
     constructor(status: number, message: string) { super(message); this.status = status }
@@ -30,7 +29,7 @@ vi.mock('../api/client', () => ({
 }))
 
 import { Game } from '../pages/Game'
-import { scanToken, devAdvance, devBack, backClue, checkSession } from '../api/client'
+import { scanToken, devAdvance, devBack, backClue } from '../api/client'
 
 function renderGame(clue = 'Find the gift table', { is_final_clue = false } = {}) {
   localStorage.setItem(
@@ -58,16 +57,6 @@ beforeEach(() => {
   vi.mocked(devAdvance).mockReset()
   vi.mocked(devBack).mockReset()
   vi.mocked(backClue).mockReset()
-  vi.mocked(checkSession).mockResolvedValue(true)
-})
-
-test('redirects home and clears session when session is not found on backend', async () => {
-  vi.mocked(checkSession).mockResolvedValue(false)
-  renderGame()
-  await waitFor(() => {
-    expect(screen.getByTestId('home-page')).toBeInTheDocument()
-  })
-  expect(localStorage.getItem('scavenger_session')).toBeNull()
 })
 
 test('renders a back button', () => {

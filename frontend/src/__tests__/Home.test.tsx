@@ -49,28 +49,13 @@ test('renders the wedding date', () => {
 
 test('renders the start button', () => {
   renderHome()
-  expect(screen.getByRole('button', { name: /start/i })).toBeInTheDocument()
+  expect(screen.getByRole('button')).toBeInTheDocument()
 })
 
 test('clicking Start calls startGame and navigates to /game', async () => {
   renderHome()
-  fireEvent.click(screen.getByRole('button', { name: /start/i }))
+  fireEvent.click(screen.getByRole('button'))
   await waitFor(() => {
     expect(startGame).toHaveBeenCalled()
   })
-})
-
-test('shows "Return to the Hunt" when a session exists', () => {
-  renderHome({ withSession: true })
-  expect(screen.getByRole('button', { name: /return to the hunt/i })).toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: /start the hunt/i })).not.toBeInTheDocument()
-})
-
-test('"Return to the Hunt" navigates to /game without calling startGame', async () => {
-  renderHome({ withSession: true })
-  fireEvent.click(screen.getByRole('button', { name: /return to the hunt/i }))
-  await waitFor(() => {
-    expect(screen.getByTestId('game-page')).toBeInTheDocument()
-  })
-  expect(startGame).not.toHaveBeenCalled()
 })

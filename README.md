@@ -29,6 +29,8 @@ make test          # run all tests (backend + frontend)
 make test-backend  # pytest only
 make test-frontend # vitest only
 make lint          # ESLint
+make deploy-frontend # build + upload frontend + CloudFront invalidation
+make deploy-backend  # SSH deploy backend + restart service
 make help          # list all targets
 ```
 
@@ -49,6 +51,82 @@ This unlocks:
 - A **DEV / ← Back / Skip →** button panel on the Game screen
 
 Never enable in production.
+
+## Deployment
+
+Deployment logic lives in scripts, and Make wraps them:
+
+- `scripts/deploy-frontend.sh`
+- `scripts/deploy-backend.sh`
+
+This keeps deploy steps versioned/testable while still giving a simple `make` entrypoint.
+
+### Frontend deploy
+
+Defaults are set for this project, but can be overridden:
+
+```bash
+# optional overrides: API_URL, FRONTEND_BUCKET, CLOUDFRONT_DISTRIBUTION_ID, AWS_PROFILE
+make deploy-frontend
+```
+
+### Backend deploy
+
+Requires your SSH key path:
+
+```bash
+SSH_KEY_PATH=~/.ssh/wedding-hunt.pem make deploy-backend
+```
+
+Optional overrides:
+
+- `REMOTE_HOST` (default: `wedding-api.jennproos.com`)
+- `REMOTE_USER` (default: `ec2-user`)
+- `APP_DIR` (default: `app`)
+- `BRANCH` (default: `main`)
+- `SERVICE_NAME` (default: `scavenger`)
+
+## Infrastructure (CDK)
+
+The `infra/` folder contains the AWS CDK stack for production infrastructure.
+
+### Prereqs
+
+- AWS CLI configured (`aws configure`)
+- AWS CDK CLI installed (`npm install -g aws-cdk`)
+- Python 3.11+
+
+### First-time setup
+
+```bash
+make infra-venv
+```
+
+Create `infra/.env` (copy from `infra/.env.example`) and fill in values:
+
+- `HOSTED_ZONE_ID`
+- `KEY_NAME`
+- `KEY_PATH`
+- `GITHUB_REPO_URL`
+
+### Bootstrap (first deploy in account/region)
+
+```bash
+cd infra
+source .venv/bin/activate
+cdk bootstrap aws://YOUR_ACCOUNT_ID/us-east-1
+```
+
+### Deploy / update infra
+
+```bash
+cd infra
+source .venv/bin/activate
+cdk diff
+cdk deploy
+```
+
+For full infra details and post-deploy steps (HTTPS certbot, frontend bucket/distribution outputs, troubleshooting), see [infra/README.md](/Users/jenn.proos/Projects/Personal/wedding-scavenger-hunt/infra/README.md).
 
 ## Name Ideas
 
