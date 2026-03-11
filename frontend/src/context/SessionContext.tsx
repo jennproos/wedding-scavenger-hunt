@@ -8,6 +8,7 @@ export interface SessionState {
   completed: boolean
   is_final_clue?: boolean
   clue_number?: number
+  player_name?: string
 }
 
 interface SessionContextValue {

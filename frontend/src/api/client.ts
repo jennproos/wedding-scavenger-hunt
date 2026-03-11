@@ -3,6 +3,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 export interface StartResponse {
   session_id: string
   clue_text: string
+  player_name: string
 }
 
 export interface ScanResponse {
@@ -13,8 +14,21 @@ export interface ScanResponse {
   is_final_clue?: boolean
 }
 
-export async function startGame(): Promise<StartResponse> {
-  const res = await fetch(`${API_URL}/start`, { method: 'POST' })
+export interface LeaderboardEntry {
+  session_id: string
+  player_name: string
+  clue_number: number
+  completed: boolean
+  start_time: string | null
+  completion_time: string | null
+}
+
+export async function startGame(playerName: string): Promise<StartResponse> {
+  const res = await fetch(`${API_URL}/start`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ player_name: playerName }),
+  })
   if (!res.ok) throw new Error(`Failed to start game: ${res.status}`)
   return res.json() as Promise<StartResponse>
 }
@@ -38,6 +52,12 @@ export async function scanToken(
   })
   if (!res.ok) throw new ApiError(res.status, `Scan failed: ${res.status}`)
   return res.json() as Promise<ScanResponse>
+}
+
+export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
+  const res = await fetch(`${API_URL}/leaderboard`)
+  if (!res.ok) throw new Error(`Failed to fetch leaderboard: ${res.status}`)
+  return res.json() as Promise<LeaderboardEntry[]>
 }
 
 export async function devAdvance(session_id: string): Promise<ScanResponse> {

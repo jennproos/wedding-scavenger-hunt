@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClueCard } from '../components/ClueCard'
 import { CodeInput } from '../components/CodeInput'
+import { LeaderboardModal } from '../components/LeaderboardModal'
 import { scanToken, devAdvance, devBack, backClue, ApiError } from '../api/client'
 import { useSession } from '../context/SessionContext'
 import swirlyArrow from '../assets/stickers/Swirly_Arrow.png'
@@ -15,6 +16,7 @@ export function Game() {
   const [clueKey, setClueKey] = useState(0)
   const [claimNudging, setClaimNudging] = useState(false)
   const [fadingOut, setFadingOut] = useState(false)
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false)
   const pendingRef = useRef<{ completed: boolean; next_clue?: string; is_final_clue?: boolean; session: typeof session } | null>(null)
 
   const DEV = import.meta.env.VITE_DEV_OVERRIDE === 'true'
@@ -148,6 +150,18 @@ export function Game() {
           <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
         )}
       </div>
+      {session.player_name && (
+        <div className="player-name-bar">
+          <span className="player-name-text">{session.player_name}</span>
+          <button
+            className="trophy-btn"
+            onClick={() => setLeaderboardOpen(true)}
+            aria-label="Open leaderboard"
+          >
+            🏆
+          </button>
+        </div>
+      )}
       {DEV && (
         <div className="dev-controls">
           <span className="dev-label">DEV</span>
@@ -155,6 +169,7 @@ export function Game() {
           <button onClick={handleDevAdvance}>Skip →</button>
         </div>
       )}
+      <LeaderboardModal isOpen={leaderboardOpen} onClose={() => setLeaderboardOpen(false)} />
     </div>
   )
 }

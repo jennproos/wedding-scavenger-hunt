@@ -4,14 +4,10 @@ import { vi } from 'vitest'
 import { SessionProvider } from '../context/SessionContext'
 
 vi.mock('../api/client', () => ({
-  startGame: vi.fn().mockResolvedValue({
-    session_id: 'test-session-id',
-    clue_text: 'Find the gift table',
-  }),
+  startGame: vi.fn(),
 }))
 
 import { Home } from '../pages/Home'
-import { startGame } from '../api/client'
 
 function renderHome({ withSession = false } = {}) {
   if (withSession) {
@@ -25,6 +21,7 @@ function renderHome({ withSession = false } = {}) {
       <SessionProvider>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/name" element={<div data-testid="name-page" />} />
           <Route path="/game" element={<div data-testid="game-page" />} />
         </Routes>
       </SessionProvider>
@@ -34,7 +31,6 @@ function renderHome({ withSession = false } = {}) {
 
 beforeEach(() => {
   localStorage.clear()
-  vi.mocked(startGame).mockClear()
 })
 
 test('renders the couple names', () => {
@@ -52,10 +48,18 @@ test('renders the start button', () => {
   expect(screen.getByRole('button')).toBeInTheDocument()
 })
 
-test('clicking Start calls startGame and navigates to /game', async () => {
+test('clicking Start with no session navigates to /name', async () => {
   renderHome()
   fireEvent.click(screen.getByRole('button'))
   await waitFor(() => {
-    expect(startGame).toHaveBeenCalled()
+    expect(screen.getByTestId('name-page')).toBeInTheDocument()
+  })
+})
+
+test('with an existing session, clicking Start navigates to /game without calling startGame', async () => {
+  renderHome({ withSession: true })
+  fireEvent.click(screen.getByRole('button'))
+  await waitFor(() => {
+    expect(screen.getByTestId('game-page')).toBeInTheDocument()
   })
 })

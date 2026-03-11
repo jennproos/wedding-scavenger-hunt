@@ -11,7 +11,7 @@ async def client():
 
 @pytest.mark.anyio
 async def test_start_returns_session_id_and_clue(client):
-    response = await client.post("/start")
+    response = await client.post("/start", json={"player_name": "Alice"})
     assert response.status_code == 200
     data = response.json()
     assert "session_id" in data
@@ -23,16 +23,48 @@ async def test_start_returns_session_id_and_clue(client):
 
 
 @pytest.mark.anyio
+async def test_start_returns_player_name(client):
+    response = await client.post("/start", json={"player_name": "Bob"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["player_name"] == "Bob"
+
+
+@pytest.mark.anyio
+async def test_start_requires_player_name(client):
+    response = await client.post("/start", json={})
+    assert response.status_code == 422
+
+
+@pytest.mark.anyio
+async def test_start_rejects_empty_player_name(client):
+    response = await client.post("/start", json={"player_name": ""})
+    assert response.status_code == 422
+
+
+@pytest.mark.anyio
+async def test_start_rejects_name_over_30_chars(client):
+    response = await client.post("/start", json={"player_name": "A" * 31})
+    assert response.status_code == 422
+
+
+@pytest.mark.anyio
+async def test_start_accepts_name_exactly_30_chars(client):
+    response = await client.post("/start", json={"player_name": "A" * 30})
+    assert response.status_code == 200
+
+
+@pytest.mark.anyio
 async def test_start_creates_unique_sessions(client):
-    r1 = await client.post("/start")
-    r2 = await client.post("/start")
+    r1 = await client.post("/start", json={"player_name": "Alice"})
+    r2 = await client.post("/start", json={"player_name": "Bob"})
     assert r1.json()["session_id"] != r2.json()["session_id"]
 
 
 @pytest.mark.anyio
 async def test_scan_correct_token_advances_stage(client):
     from stage_data import stages
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
 
     stage1_token = stages[1]["code"]
@@ -47,7 +79,7 @@ async def test_scan_correct_token_advances_stage(client):
 
 @pytest.mark.anyio
 async def test_scan_wrong_token_returns_playful_error(client):
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
 
     scan = await client.post("/scan", json={"session_id": session_id, "token": "not-a-real-token"})
@@ -61,7 +93,7 @@ async def test_scan_wrong_token_returns_playful_error(client):
 @pytest.mark.anyio
 async def test_scan_wrong_token_does_not_advance_stage(client):
     from stage_data import stages
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
 
     # Scan wrong token
@@ -83,7 +115,7 @@ async def test_scan_unknown_session_returns_404(client):
 @pytest.mark.anyio
 async def test_back_moves_to_prev_stage(client):
     from stage_data import stages
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
 
     token = stages[1]["code"]
@@ -98,7 +130,7 @@ async def test_back_moves_to_prev_stage(client):
 
 @pytest.mark.anyio
 async def test_back_on_stage_1_returns_failure(client):
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
 
     resp = await client.post("/back", json={"session_id": session_id})
@@ -110,7 +142,7 @@ async def test_back_on_stage_1_returns_failure(client):
 @pytest.mark.anyio
 async def test_scan_advancing_to_final_stage_sets_is_final_clue(client):
     from stage_data import stages
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
 
     for stage_id in range(1, 4):
@@ -129,7 +161,7 @@ async def test_scan_advancing_to_final_stage_sets_is_final_clue(client):
 @pytest.mark.anyio
 async def test_complete_all_stages_reaches_completed(client):
     from stage_data import stages
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
 
     for stage_id in range(1, 6):
@@ -144,7 +176,7 @@ async def test_complete_all_stages_reaches_completed(client):
 
 @pytest.mark.anyio
 async def test_check_session_returns_200_for_known_session(client):
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
     resp = await client.get(f"/session/{session_id}")
     assert resp.status_code == 200
@@ -159,7 +191,7 @@ async def test_check_session_returns_404_for_unknown_session(client):
 @pytest.mark.anyio
 async def test_scan_already_completed_session(client):
     from stage_data import stages
-    start = await client.post("/start")
+    start = await client.post("/start", json={"player_name": "Alice"})
     session_id = start.json()["session_id"]
 
     # Complete all stages
@@ -173,3 +205,87 @@ async def test_scan_already_completed_session(client):
     assert scan.status_code == 200
     data = scan.json()
     assert data["completed"] is True
+
+
+# --- Leaderboard tests ---
+
+@pytest.mark.anyio
+async def test_leaderboard_empty_initially(client):
+    resp = await client.get("/leaderboard")
+    assert resp.status_code == 200
+    assert resp.json() == []
+
+
+@pytest.mark.anyio
+async def test_leaderboard_contains_entry_after_start(client):
+    await client.post("/start", json={"player_name": "Carol"})
+    resp = await client.get("/leaderboard")
+    assert resp.status_code == 200
+    entries = resp.json()
+    assert any(e["player_name"] == "Carol" for e in entries)
+
+
+@pytest.mark.anyio
+async def test_leaderboard_entry_has_required_fields(client):
+    await client.post("/start", json={"player_name": "Dave"})
+    resp = await client.get("/leaderboard")
+    entry = resp.json()[0]
+    assert "player_name" in entry
+    assert "clue_number" in entry
+    assert "completed" in entry
+    assert "start_time" in entry
+
+
+@pytest.mark.anyio
+async def test_leaderboard_clue_number_advances_after_scan(client):
+    from stage_data import stages
+    start = await client.post("/start", json={"player_name": "Eve"})
+    session_id = start.json()["session_id"]
+
+    token = stages[1]["code"]
+    await client.post("/scan", json={"session_id": session_id, "token": token})
+
+    resp = await client.get("/leaderboard")
+    entry = next(e for e in resp.json() if e["player_name"] == "Eve")
+    assert entry["clue_number"] == 2
+
+
+@pytest.mark.anyio
+async def test_leaderboard_completion_time_set_when_completed(client):
+    from stage_data import stages
+    start = await client.post("/start", json={"player_name": "Frank"})
+    session_id = start.json()["session_id"]
+
+    for stage_id in range(1, 6):
+        token = stages[stage_id]["code"]
+        await client.post("/scan", json={"session_id": session_id, "token": token})
+
+    resp = await client.get("/leaderboard")
+    entry = next(e for e in resp.json() if e["player_name"] == "Frank")
+    assert entry["completed"] is True
+    assert entry["completion_time"] is not None
+
+
+@pytest.mark.anyio
+async def test_leaderboard_completed_entries_sorted_before_in_progress(client):
+    from stage_data import stages
+
+    # Start two sessions
+    r1 = await client.post("/start", json={"player_name": "Grace"})
+    sid1 = r1.json()["session_id"]
+    r2 = await client.post("/start", json={"player_name": "Hank"})
+    sid2 = r2.json()["session_id"]
+
+    # Complete Grace's game
+    for stage_id in range(1, 6):
+        token = stages[stage_id]["code"]
+        await client.post("/scan", json={"session_id": sid1, "token": token})
+
+    # Hank stays in progress
+
+    resp = await client.get("/leaderboard")
+    entries = resp.json()
+    names = [e["player_name"] for e in entries]
+    grace_idx = names.index("Grace")
+    hank_idx = names.index("Hank")
+    assert grace_idx < hank_idx

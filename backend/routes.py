@@ -1,17 +1,26 @@
 import os
+from datetime import datetime
 from fastapi import APIRouter, HTTPException
-from models import StartResponse, ScanRequest, ScanResponse, DevRequest
-from services import session_service, stage_service
+from models import StartRequest, StartResponse, ScanRequest, ScanResponse, DevRequest
+from services import session_service, stage_service, leaderboard_service
 
 router = APIRouter()
 
 
 @router.post("/start", response_model=StartResponse)
-async def start():
+async def start(request: StartRequest):
     first_stage_id = stage_service.get_first_stage_id()
-    session = session_service.create_session(starting_stage=first_stage_id)
+    session = session_service.create_session(
+        starting_stage=first_stage_id,
+        player_name=request.player_name,
+    )
     clue_text = stage_service.get_clue(first_stage_id)
-    return StartResponse(session_id=session.session_id, clue_text=clue_text)
+    leaderboard_service.save_entry(session, clue_number=first_stage_id)
+    return StartResponse(
+        session_id=session.session_id,
+        clue_text=clue_text,
+        player_name=session.player_name,
+    )
 
 
 @router.post("/scan", response_model=ScanResponse)
@@ -36,7 +45,9 @@ async def scan(request: ScanRequest):
 
     if stage_service.is_final_stage(session.current_stage):
         session.completed = True
+        session.completion_time = datetime.utcnow()
         session_service.update_session(session)
+        leaderboard_service.save_entry(session, clue_number=session.current_stage)
         return ScanResponse(
             success=True,
             completed=True,
@@ -46,14 +57,21 @@ async def scan(request: ScanRequest):
     next_stage_id = stage_service.get_next_stage_id(session.current_stage)
     session.current_stage = next_stage_id
     session_service.update_session(session)
+    leaderboard_service.save_entry(session, clue_number=next_stage_id)
     next_clue = stage_service.get_clue(next_stage_id)
     return ScanResponse(
         success=True,
         completed=False,
         next_clue=next_clue,
-        is_final_clue=False,
+        is_final_clue=stage_service.is_final_stage(next_stage_id),
         message="Onward!",
     )
+
+
+@router.get("/leaderboard")
+async def get_leaderboard():
+    entries = leaderboard_service.get_entries()
+    return [e.model_dump() for e in entries]
 
 
 @router.get("/session/{session_id}")
@@ -106,6 +124,7 @@ async def dev_advance(request: DevRequest):
 
     if stage_service.is_final_stage(session.current_stage):
         session.completed = True
+        session.completion_time = datetime.utcnow()
         session_service.update_session(session)
         return ScanResponse(
             success=True,
