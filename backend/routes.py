@@ -51,7 +51,7 @@ async def scan(request: ScanRequest):
         success=True,
         completed=False,
         next_clue=next_clue,
-        is_final_clue=stage_service.is_final_stage(next_stage_id),
+        is_final_clue=False,
         message="Onward!",
     )
 
@@ -121,7 +121,7 @@ async def dev_advance(request: DevRequest):
         success=True,
         completed=False,
         next_clue=next_clue,
-        is_final_clue=stage_service.is_final_stage(next_stage_id),
+        is_final_clue=False,
         message="[DEV] Skipped!",
     )
 

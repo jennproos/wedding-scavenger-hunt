@@ -128,24 +128,26 @@ export function Game() {
       <div className={`clue-wrapper${fadingOut ? ' clue-wrapper--fading-out' : ''}`}>
         <ClueCard key={clueKey} clue={session.current_clue} isFinal={session.is_final_clue} />
       </div>
-      {session.is_final_clue ? (
-        <button
-          className={`btn-start${claimNudging ? ' btn-start--nudging' : ''}`}
-          aria-label="Claim your prize"
-          onClick={() => {
-            if (claimNudging) return
-            setClaimNudging(true)
-            setTimeout(() => {
-              setSession({ ...session, completed: true })
-              navigate('/final')
-            }, 400)
-          }}
-        >
-          <img src={heartsPiercedByAnArrow} className="btn-start-img" alt="" />
-        </button>
-      ) : (
-        <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
-      )}
+      <div className="game-input-area">
+        {session.is_final_clue ? (
+          <button
+            className={`btn-start${claimNudging ? ' btn-start--nudging' : ''}`}
+            aria-label="Claim your prize"
+            onClick={() => {
+              if (claimNudging) return
+              setClaimNudging(true)
+              setTimeout(() => {
+                setSession({ ...session, completed: true })
+                navigate('/final')
+              }, 400)
+            }}
+          >
+            <img src={heartsPiercedByAnArrow} className="btn-start-img" alt="" />
+          </button>
+        ) : (
+          <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
+        )}
+      </div>
       {DEV && (
         <div className="dev-controls">
           <span className="dev-label">DEV</span>

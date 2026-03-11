@@ -40,14 +40,10 @@ export function ClueCard({ clue, isFinal }: ClueCardProps) {
     <div className="clue-card">
       <img src={scrollSrc} className="clue-card-bg" alt="" />
       <div className="clue-card-fill" style={fillMask} />
-      <div className={`clue-card-text${isFinal ? ' clue-card-text--final' : ''}`}>
-        {isFinal ? (
-          <span className="clue-card-smiley" data-testid="clue-card-smiley">😊</span>
-        ) : (
-          displayed.split('\n').map((line, i) => (
-            <p key={i} style={{ marginLeft: `${i * 0.6}rem` }}>{line}</p>
-          ))
-        )}
+      <div className="clue-card-text">
+        {(isFinal ? clue : displayed).split('\n').map((line, i) => (
+          <p key={i} style={{ marginLeft: `${i * 0.6}rem` }}>{line}</p>
+        ))}
       </div>
     </div>
   )
