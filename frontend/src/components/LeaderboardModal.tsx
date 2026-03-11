@@ -7,9 +7,13 @@ interface Props {
   onClose: () => void
 }
 
+function parseUTC(s: string): Date {
+  return new Date(s.endsWith('Z') || s.includes('+') ? s : s + 'Z')
+}
+
 function formatDuration(startTime: string, completionTime: string): string {
-  const start = new Date(startTime).getTime()
-  const end = new Date(completionTime).getTime()
+  const start = parseUTC(startTime).getTime()
+  const end = parseUTC(completionTime).getTime()
   const mins = Math.round((end - start) / 60000)
   return `${mins} min`
 }
@@ -51,7 +55,7 @@ export function LeaderboardModal({ isOpen, onClose }: Props) {
               <tr>
                 <th>Name</th>
                 <th>Progress</th>
-                <th>Time</th>
+                <th>Started</th>
               </tr>
             </thead>
             <tbody>
@@ -65,7 +69,7 @@ export function LeaderboardModal({ isOpen, onClose }: Props) {
                     {entry.completed && entry.start_time && entry.completion_time
                       ? formatDuration(entry.start_time, entry.completion_time)
                       : entry.start_time
-                      ? `${Math.round((Date.now() - new Date(entry.start_time).getTime()) / 60000)} min`
+                      ? `${Math.round((Date.now() - parseUTC(entry.start_time).getTime()) / 60000)} min ago`
                       : '—'}
                   </td>
                 </tr>

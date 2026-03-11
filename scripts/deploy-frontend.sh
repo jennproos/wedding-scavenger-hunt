@@ -29,10 +29,10 @@ cd "$FRONTEND_DIR"
 VITE_API_URL="$API_URL" npm run build
 
 echo "Syncing dist/ to s3://$FRONTEND_BUCKET"
-aws "${AWS_ARGS[@]}" s3 sync dist/ "s3://$FRONTEND_BUCKET" --delete
+aws "${AWS_ARGS[@]+"${AWS_ARGS[@]}"}" s3 sync dist/ "s3://$FRONTEND_BUCKET" --delete
 
 echo "Creating CloudFront invalidation for $CLOUDFRONT_DISTRIBUTION_ID"
-aws "${AWS_ARGS[@]}" cloudfront create-invalidation \
+aws "${AWS_ARGS[@]+"${AWS_ARGS[@]}"}" cloudfront create-invalidation \
   --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
   --paths "/*"
 
