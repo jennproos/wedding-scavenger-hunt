@@ -126,7 +126,9 @@ export function Game() {
           <img src={homeIcon} className="btn-home-house" alt="" />
         </button>
       </div>
-      <p className="clue-number-label">{session.clue_number ?? 1}</p>
+      <p className="clue-number-label">
+        <span className="clue-number-word">clue</span>{session.clue_number ?? 1}
+      </p>
       <div className={`clue-wrapper${fadingOut ? ' clue-wrapper--fading-out' : ''}`}>
         <ClueCard key={clueKey} clue={session.current_clue} isFinal={session.is_final_clue} />
       </div>

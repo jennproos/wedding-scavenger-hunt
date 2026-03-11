@@ -713,9 +713,20 @@ button:disabled {
   to   { opacity: 0; transform: translateY(-14px); }
 }
 
+.clue-number-word {
+  display: block;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  line-height: 1;
+  margin-bottom: -0.55rem;
+}
+
 .clue-number-label {
   position: absolute;
-  top: 0.6rem;
+  top: 1.2rem;
   right: 1.5rem;
   font-family: 'Pacifico', cursive;
   font-size: 2.2rem;
@@ -761,6 +772,94 @@ button:disabled {
     transform: translateY(110vh) rotate(720deg);
     opacity: 0;
   }
+}
+
+/* Resume modal */
+.resume-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 18, 10, 0.75);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fade-in 0.3s ease-out both;
+}
+
+.resume-card {
+  background: #4a3528;
+  border-radius: 20px;
+  padding: 2rem 2rem 1.75rem;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.resume-greeting {
+  font-size: 1.15rem;
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.resume-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.btn-resume-continue {
+  background: var(--color-button);
+  color: var(--color-text);
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+
+.btn-resume-continue:hover {
+  opacity: 0.85;
+}
+
+.btn-resume-new {
+  background: transparent;
+  color: var(--color-text);
+  border: 2px solid rgba(245, 240, 232, 0.25);
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+
+.btn-resume-new:hover {
+  opacity: 1;
+}
+
+/* Name entry page — staggered animation overrides */
+.name-entry-page .home-subtitle {
+  animation: fade-in-dimmer 0.6s ease-out 0.2s both;
+}
+
+.name-entry-page .name-input-wrapper {
+  animation: fade-in 0.6s ease-out 0.6s both;
+}
+
+.name-entry-page .btn-start {
+  animation: fade-in-dimmer 0.6s ease-out 1.0s both, btn-idle-wiggle 3s ease-in-out 4s infinite;
 }
 
 /* Name input */
