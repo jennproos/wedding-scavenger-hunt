@@ -96,7 +96,7 @@ a {
   }
   .game-page {
     padding: 0rem 0.75rem 0.5rem;
-    gap: 0.5rem;
+    gap: 0.25rem;
   }
   .game-page .clue-card {
     max-width: 400px;
@@ -454,7 +454,8 @@ button:disabled {
   min-height: unset;
   overflow: hidden;
   justify-content: flex-start;
-  padding-top: 0.25rem;
+  padding-top: 0;
+  gap: 0.25rem;
 }
 
 .game-page .clue-wrapper {
