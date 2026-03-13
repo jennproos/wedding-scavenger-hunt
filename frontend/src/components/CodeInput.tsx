@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { ChampagnePop } from './ChampagnePop'
 
 type Status = 'idle' | 'submitting' | 'success' | 'error' | 'incomplete'
@@ -49,13 +49,6 @@ export function CodeInput({ onSubmit, onSuccessReady }: CodeInputProps) {
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
   ]
-
-  const [entering, setEntering] = useState(true)
-
-  useEffect(() => {
-    const t = setTimeout(() => setEntering(false), 2600)
-    return () => clearTimeout(t)
-  }, [])
 
   const allFilled = digits.every(d => d !== '')
   const isOpen = allFilled && status === 'idle'
@@ -133,7 +126,7 @@ export function CodeInput({ onSubmit, onSuccessReady }: CodeInputProps) {
         ))}
       </div>
       <button
-        className={`lock-btn lock-btn--${status}${isOpen ? ' lock-btn--open' : ''}${entering ? ' lock-btn--entering' : ''}`}
+        className={`lock-btn lock-btn--${status}${isOpen ? ' lock-btn--open' : ''}`}
         onClick={handleSubmit}
         disabled={status !== 'idle'}
         aria-label="Unlock"

@@ -95,12 +95,16 @@ a {
     padding: 1.5rem 0.75rem;
   }
   .game-page {
-    padding: 0.75rem;
+    padding: 0rem 0.75rem 0.5rem;
+    gap: 0.5rem;
+  }
+  .game-page .clue-card {
+    max-width: 400px;
   }
   .clue-card-text {
     font-size: 0.82rem;
-    line-height: 1.55;
-    padding: 9% 18% 48% 10%;
+    line-height: 1.4;
+    padding: 17% 8% 54% 10%;
   }
 }
 
@@ -273,7 +277,7 @@ a {
 }
 
 .btn-home img {
-  width: 48px;
+  width: 36px;
   height: auto;
   display: block;
   filter: invert(1) brightness(0.68) sepia(1);
@@ -281,7 +285,7 @@ a {
 }
 
 .btn-home img.btn-home-house {
-  width: 64px;
+  width: 48px;
   height: auto;
   display: block;
   filter: grayscale(1) brightness(0.92) sepia(1);
@@ -378,6 +382,8 @@ button:disabled {
   z-index: 2;
   width: 100%;
   height: auto;
+  aspect-ratio: 1 / 1.7;
+  object-fit: fill;
   display: block;
   filter: sepia(1) brightness(0.75);
   opacity: 0.4;
@@ -398,15 +404,30 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 9% 24% 48% 10%;
-  font-size: 1rem;
+  padding: 26% 22% 54% 11%;
+  font-size: 1.1rem;
   color: #3b2a1e;
-  line-height: 1.7;
+  line-height: 1.45;
   text-align: left;
 }
 
 .clue-card-text p {
   margin: 0.15rem 0;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 1.5px;
+  height: 0.9em;
+  background: #5a3e28;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: cursor-blink 0.6s ease-in-out infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .clue-card-text--final {
@@ -433,10 +454,11 @@ button:disabled {
   min-height: unset;
   overflow: hidden;
   justify-content: flex-start;
+  padding-top: 0.25rem;
 }
 
 .game-page .clue-wrapper {
-  flex: 1;
+  flex: 0 1 auto;
   min-height: 0;
   overflow: hidden;
 }
@@ -445,6 +467,9 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: -3rem;
+  position: relative;
+  z-index: 10;
 }
 
 /* Final page */
@@ -762,6 +787,7 @@ button:disabled {
 
 .game-page .clue-number-label {
   animation: fade-in 0.7s ease-out both;
+  z-index: 4;
 }
 
 .game-page .clue-card-bg,
@@ -783,8 +809,26 @@ button:disabled {
 .game-page .code-digit:nth-child(4) { animation: fade-in 0.5s ease-out 1.9s both; }
 
 .game-page .btn-nav {
+  position: relative;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 4;
   animation: fade-in 0.8s ease-out 2.8s both;
 }
+
+.game-page .player-name-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.btn-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 
 /* Enter code trigger */
 .btn-enter-code {
@@ -808,31 +852,34 @@ button:disabled {
   border-color: rgba(245, 240, 232, 0.45);
 }
 
-/* Code entry bottom sheet */
+/* Code entry modal */
 .code-entry-overlay {
   position: fixed;
   inset: 0;
   background: rgba(12, 6, 3, 0.6);
   z-index: 200;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
 }
 
 .code-entry-sheet {
   width: 100%;
+  max-width: 340px;
   background: #3a2518;
-  border-radius: 24px 24px 0 0;
-  padding: 1.25rem 1.5rem 3.5rem;
+  border-radius: 20px;
+  padding: 1.5rem 1.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  animation: sheet-slide-up 0.35s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: modal-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-@keyframes sheet-slide-up {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+@keyframes modal-pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 }
 
 .code-entry-close {

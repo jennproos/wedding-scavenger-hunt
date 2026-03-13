@@ -119,12 +119,20 @@ export function Game() {
   return (
     <div className="page game-page">
       <div className="btn-nav">
-        <button className="btn-home" onClick={handleBack} aria-label="Back">
-          <img src={swirlyArrow} alt="" />
-        </button>
-        <button className="btn-home" onClick={() => navigate('/')} aria-label="Home">
-          <img src={homeIcon} className="btn-home-house" alt="" />
-        </button>
+        <div className="btn-nav-left">
+          <button className="btn-home" onClick={handleBack} aria-label="Back">
+            <img src={swirlyArrow} alt="" />
+          </button>
+          <button className="btn-home" onClick={() => navigate('/')} aria-label="Home">
+            <img src={homeIcon} className="btn-home-house" alt="" />
+          </button>
+        </div>
+        {session.player_name && (
+          <div className="player-name-bar">
+            <span className="player-name-text">{session.player_name}</span>
+            <button className="trophy-btn" onClick={() => setLeaderboardOpen(true)} aria-label="Open leaderboard">🏆</button>
+          </div>
+        )}
       </div>
       <p className="clue-number-label">
         <span className="clue-number-word">clue</span>{session.clue_number ?? 1}
@@ -137,18 +145,6 @@ export function Game() {
           enter code
         </button>
       </div>
-      {session.player_name && (
-        <div className="player-name-bar">
-          <span className="player-name-text">{session.player_name}</span>
-          <button
-            className="trophy-btn"
-            onClick={() => setLeaderboardOpen(true)}
-            aria-label="Open leaderboard"
-          >
-            🏆
-          </button>
-        </div>
-      )}
       {DEV && (
         <div className="dev-controls">
           <span className="dev-label">DEV</span>
