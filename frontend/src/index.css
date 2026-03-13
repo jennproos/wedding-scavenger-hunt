@@ -43,6 +43,10 @@ a {
   gap: 1.5rem;
 }
 
+body:has(.game-page) .copyright {
+  display: none;
+}
+
 /* Copyright */
 .copyright {
   position: fixed;
@@ -468,7 +472,6 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -3rem;
   position: relative;
   z-index: 10;
 }
