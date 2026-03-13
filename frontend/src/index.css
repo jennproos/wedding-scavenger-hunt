@@ -94,6 +94,9 @@ a {
   .page {
     padding: 1.5rem 0.75rem;
   }
+  .game-page {
+    padding: 0.75rem;
+  }
   .clue-card-text {
     font-size: 0.82rem;
     line-height: 1.55;
@@ -426,10 +429,19 @@ button:disabled {
 /* Game page */
 .game-page {
   position: relative;
+  height: 100dvh;
+  min-height: unset;
+  overflow: hidden;
+  justify-content: flex-start;
+}
+
+.game-page .clue-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .game-input-area {
-  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -772,6 +784,81 @@ button:disabled {
 
 .game-page .btn-nav {
   animation: fade-in 0.8s ease-out 2.8s both;
+}
+
+/* Enter code trigger */
+.btn-enter-code {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.65);
+  background: transparent;
+  border: 1px solid rgba(245, 240, 232, 0.22);
+  border-radius: 100px;
+  padding: 0.75rem 1.8rem;
+  min-height: 44px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.btn-enter-code:hover {
+  color: rgba(245, 240, 232, 0.9);
+  border-color: rgba(245, 240, 232, 0.45);
+}
+
+/* Code entry bottom sheet */
+.code-entry-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 6, 3, 0.6);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+}
+
+.code-entry-sheet {
+  width: 100%;
+  background: #3a2518;
+  border-radius: 24px 24px 0 0;
+  padding: 1.25rem 1.5rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  animation: sheet-slide-up 0.35s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes sheet-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.code-entry-close {
+  align-self: flex-end;
+  background: transparent;
+  border: none;
+  color: rgba(245, 240, 232, 0.4);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.code-entry-close:hover {
+  color: rgba(245, 240, 232, 0.7);
+}
+
+/* Prevent staggered page-load animations from firing inside the sheet */
+.code-entry-sheet .code-digit {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+.code-entry-sheet .error-message {
+  animation: none !important;
+  opacity: 1 !important;
 }
 
 @keyframes fall {

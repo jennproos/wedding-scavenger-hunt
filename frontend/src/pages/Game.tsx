@@ -15,6 +15,7 @@ export function Game() {
   const [clueKey, setClueKey] = useState(0)
   const [fadingOut, setFadingOut] = useState(false)
   const [leaderboardOpen, setLeaderboardOpen] = useState(false)
+  const [codeModalOpen, setCodeModalOpen] = useState(false)
   const pendingRef = useRef<{ completed: boolean; next_clue?: string; is_final_clue?: boolean; session: typeof session } | null>(null)
 
   const DEV = import.meta.env.VITE_DEV_OVERRIDE === 'true'
@@ -40,6 +41,7 @@ export function Game() {
   )
 
   const handleSuccessReady = useCallback(() => {
+    setCodeModalOpen(false)
     const pending = pendingRef.current
     if (!pending || !pending.session) return
     pendingRef.current = null
@@ -131,7 +133,9 @@ export function Game() {
         <ClueCard key={clueKey} clue={session.current_clue} isFinal={session.is_final_clue} />
       </div>
       <div className="game-input-area">
-        <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
+        <button className="btn-enter-code" onClick={() => setCodeModalOpen(true)}>
+          enter code
+        </button>
       </div>
       {session.player_name && (
         <div className="player-name-bar">
@@ -150,6 +154,14 @@ export function Game() {
           <span className="dev-label">DEV</span>
           <button onClick={handleDevBack}>← Back</button>
           <button onClick={handleDevAdvance}>Skip →</button>
+        </div>
+      )}
+      {codeModalOpen && (
+        <div className="code-entry-overlay" onClick={() => setCodeModalOpen(false)}>
+          <div className="code-entry-sheet" onClick={e => e.stopPropagation()}>
+            <button className="code-entry-close" onClick={() => setCodeModalOpen(false)} aria-label="Close">✕</button>
+            <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
+          </div>
         </div>
       )}
       <LeaderboardModal isOpen={leaderboardOpen} onClose={() => setLeaderboardOpen(false)} />
