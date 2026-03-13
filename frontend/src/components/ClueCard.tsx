@@ -42,7 +42,7 @@ export function ClueCard({ clue, isFinal }: ClueCardProps) {
       <div className="clue-card-fill" style={fillMask} />
       <div className="clue-card-text">
         {(isFinal ? clue : displayed).split('\n').map((line, i) => (
-          <p key={i} style={{ marginLeft: `${i * 0.6}rem` }}>{line}</p>
+          <p key={i} style={{ marginLeft: `${i * 0.35}rem` }}>{line}</p>
         ))}
       </div>
     </div>

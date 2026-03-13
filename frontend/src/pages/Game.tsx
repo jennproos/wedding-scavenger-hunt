@@ -6,7 +6,6 @@ import { LeaderboardModal } from '../components/LeaderboardModal'
 import { scanToken, devAdvance, devBack, backClue, ApiError } from '../api/client'
 import { useSession } from '../context/SessionContext'
 import swirlyArrow from '../assets/stickers/Swirly_Arrow.png'
-import heartsPiercedByAnArrow from '../assets/stickers/Hearts_Pierced_By_An_Arrow.svg'
 import homeIcon from '../assets/stickers/Home.svg'
 
 
@@ -14,7 +13,6 @@ export function Game() {
   const navigate = useNavigate()
   const { session, setSession, clearSession } = useSession()
   const [clueKey, setClueKey] = useState(0)
-  const [claimNudging, setClaimNudging] = useState(false)
   const [fadingOut, setFadingOut] = useState(false)
   const [leaderboardOpen, setLeaderboardOpen] = useState(false)
   const pendingRef = useRef<{ completed: boolean; next_clue?: string; is_final_clue?: boolean; session: typeof session } | null>(null)
@@ -133,24 +131,7 @@ export function Game() {
         <ClueCard key={clueKey} clue={session.current_clue} isFinal={session.is_final_clue} />
       </div>
       <div className="game-input-area">
-        {session.is_final_clue ? (
-          <button
-            className={`btn-start${claimNudging ? ' btn-start--nudging' : ''}`}
-            aria-label="Claim your prize"
-            onClick={() => {
-              if (claimNudging) return
-              setClaimNudging(true)
-              setTimeout(() => {
-                setSession({ ...session, completed: true })
-                navigate('/final')
-              }, 400)
-            }}
-          >
-            <img src={heartsPiercedByAnArrow} className="btn-start-img" alt="" />
-          </button>
-        ) : (
-          <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
-        )}
+        <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
       </div>
       {session.player_name && (
         <div className="player-name-bar">

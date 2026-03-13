@@ -90,6 +90,17 @@ a {
   }
 }
 
+@media (max-width: 430px) {
+  .page {
+    padding: 1.5rem 0.75rem;
+  }
+  .clue-card-text {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    padding: 9% 18% 48% 10%;
+  }
+}
+
 .home-hero,
 .btn-start {
   position: relative;
