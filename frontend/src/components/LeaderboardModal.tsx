@@ -7,6 +7,9 @@ interface Props {
   onClose: () => void
 }
 
+type SortCol = 'name' | 'progress' | null
+type SortDir = 'asc' | 'desc'
+
 function parseUTC(s: string): Date {
   return new Date(s.endsWith('Z') || s.includes('+') ? s : s + 'Z')
 }
@@ -18,9 +21,26 @@ function formatDuration(startTime: string, completionTime: string): string {
   return `${mins} min`
 }
 
+function sortEntries(entries: LeaderboardEntry[], col: SortCol, dir: SortDir): LeaderboardEntry[] {
+  if (!col) return entries
+  return [...entries].sort((a, b) => {
+    if (col === 'name') {
+      const cmp = a.player_name.localeCompare(b.player_name)
+      return dir === 'asc' ? cmp : -cmp
+    }
+    // progress: completed > in-progress; within in-progress, higher clue_number first
+    const aScore = a.completed ? 999 : a.clue_number
+    const bScore = b.completed ? 999 : b.clue_number
+    // asc = most progress first
+    return dir === 'asc' ? bScore - aScore : aScore - bScore
+  })
+}
+
 export function LeaderboardModal({ isOpen, onClose }: Props) {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(false)
+  const [sortCol, setSortCol] = useState<SortCol>(null)
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
 
   useEffect(() => {
     if (!isOpen) return
@@ -30,7 +50,23 @@ export function LeaderboardModal({ isOpen, onClose }: Props) {
       .finally(() => setLoading(false))
   }, [isOpen])
 
+  function handleSort(col: SortCol) {
+    if (sortCol === col) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortCol(col)
+      setSortDir('asc')
+    }
+  }
+
+  function indicator(col: SortCol) {
+    if (sortCol !== col) return null
+    return sortDir === 'asc' ? ' ▲' : ' ▼'
+  }
+
   if (!isOpen) return null
+
+  const displayed = sortEntries(entries, sortCol, sortDir)
 
   return (
     <div className="leaderboard-overlay" role="dialog" aria-modal="true">
@@ -53,13 +89,25 @@ export function LeaderboardModal({ isOpen, onClose }: Props) {
           <table className="leaderboard-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Progress</th>
+                <th
+                  role="columnheader"
+                  onClick={() => handleSort('name')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  Name{indicator('name')}
+                </th>
+                <th
+                  role="columnheader"
+                  onClick={() => handleSort('progress')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  Progress{indicator('progress')}
+                </th>
                 <th>Started</th>
               </tr>
             </thead>
             <tbody>
-              {entries.map(entry => (
+              {displayed.map(entry => (
                 <tr key={entry.session_id}>
                   <td>{entry.player_name}</td>
                   <td>

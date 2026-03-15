@@ -267,6 +267,62 @@ async def test_leaderboard_completion_time_set_when_completed(client):
 
 
 @pytest.mark.anyio
+async def test_clear_leaderboard_without_auth(client):
+    resp = await client.delete("/leaderboard")
+    assert resp.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_clear_leaderboard_with_wrong_password(client):
+    resp = await client.delete("/leaderboard", headers={"Authorization": "Bearer wrong"})
+    assert resp.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_clear_leaderboard_with_correct_password(client):
+    import os
+    os.environ["ADMIN_SECRET"] = "test-secret"
+    try:
+        # Add an entry first
+        await client.post("/start", json={"player_name": "TestPlayer"})
+        leaderboard_resp = await client.get("/leaderboard")
+        assert len(leaderboard_resp.json()) > 0
+
+        resp = await client.delete("/leaderboard", headers={"Authorization": "Bearer test-secret"})
+        assert resp.status_code == 200
+        assert resp.json() == {"ok": True}
+
+        leaderboard_resp = await client.get("/leaderboard")
+        assert leaderboard_resp.json() == []
+    finally:
+        del os.environ["ADMIN_SECRET"]
+
+
+@pytest.mark.anyio
+async def test_admin_ping_without_auth(client):
+    resp = await client.get("/admin/ping")
+    assert resp.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_admin_ping_with_wrong_password(client):
+    resp = await client.get("/admin/ping", headers={"Authorization": "Bearer wrong"})
+    assert resp.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_admin_ping_with_correct_password(client):
+    import os
+    os.environ["ADMIN_SECRET"] = "test-secret"
+    try:
+        resp = await client.get("/admin/ping", headers={"Authorization": "Bearer test-secret"})
+        assert resp.status_code == 200
+        assert resp.json() == {"ok": True}
+    finally:
+        del os.environ["ADMIN_SECRET"]
+
+
+@pytest.mark.anyio
 async def test_leaderboard_completed_entries_sorted_before_in_progress(client):
     from stage_data import stages
 

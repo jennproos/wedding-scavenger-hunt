@@ -5,6 +5,7 @@ import { Home } from './pages/Home'
 import { NameEntry } from './pages/NameEntry'
 import { Game } from './pages/Game'
 import { Final } from './pages/Final'
+import { Admin } from './pages/Admin'
 
 const weddingTime = new Date('2026-05-09T17:00:00')
 const copyrightName = new Date() >= weddingTime ? 'Jenn Randall' : 'Jenn Proos'
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/name" element={<NameEntry />} />
           <Route path="/game" element={<Game />} />
           <Route path="/final" element={<Final />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </SessionProvider>
     </BrowserRouter>

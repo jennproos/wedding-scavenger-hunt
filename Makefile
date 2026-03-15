@@ -1,3 +1,6 @@
+-include .env
+export
+
 VENV := backend/venv
 PYTHON := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip

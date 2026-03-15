@@ -6,6 +6,7 @@ from aws_cdk import (
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as origins,
     aws_ec2 as ec2,
+    aws_iam as iam,
     aws_route53 as route53,
     aws_route53_targets as targets,
     aws_certificatemanager as acm,
@@ -22,7 +23,7 @@ REPO_URL = "https://github.com/jennproos/wedding-scavenger-hunt.git"
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def _backend_user_data() -> str:
+def _backend_user_data(leaderboard_bucket_name: str) -> str:
     """EC2 user data: installs Python, clones repo, starts uvicorn + nginx."""
     return f"""#!/bin/bash
 set -euo pipefail
@@ -47,7 +48,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/ec2-user/app/backend
-ExecStart=/home/ec2-user/.local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+ExecStart=/usr/local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
 Restart=always
 User=ec2-user
 Environment=STAGE_1_CODE=1111
@@ -55,6 +56,8 @@ Environment=STAGE_2_CODE=2222
 Environment=STAGE_3_CODE=3333
 Environment=STAGE_4_CODE=4444
 Environment=STAGE_5_CODE=5555
+Environment=LEADERBOARD_BUCKET={leaderboard_bucket_name}
+Environment=ADMIN_SECRET=admin
 
 [Install]
 WantedBy=multi-user.target
@@ -104,6 +107,18 @@ class WeddingScavengerHuntInfraStack(Stack):
             domain_name=f"{FRONTEND_SUBDOMAIN}.{DOMAIN_NAME}",
             validation=acm.CertificateValidation.from_dns(hosted_zone),
         )
+
+        # ── S3 bucket for leaderboard data ────────────────────────────────────
+        leaderboard_bucket = s3.Bucket(self, "LeaderboardBucket",
+            removal_policy=RemovalPolicy.RETAIN,  # never auto-delete wedding data
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+        )
+
+        # ── IAM role for EC2 (grants S3 read/write on leaderboard bucket) ─────
+        instance_role = iam.Role(self, "BackendInstanceRole",
+            assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
+        )
+        leaderboard_bucket.grant_read_write(instance_role)
 
         # ── S3 bucket for frontend static files ───────────────────────────────
         frontend_bucket = s3.Bucket(self, "FrontendBucket",
@@ -180,7 +195,8 @@ class WeddingScavengerHuntInfraStack(Stack):
             machine_image=ec2.MachineImage.latest_amazon_linux2023(),
             security_group=backend_sg,
             key_pair=ec2.KeyPair.from_key_pair_name(self, "KeyPair", KEY_PAIR_NAME),
-            user_data=ec2.UserData.custom(_backend_user_data()),
+            role=instance_role,
+            user_data=ec2.UserData.custom(_backend_user_data(leaderboard_bucket.bucket_name)),
         )
 
         # ── Elastic IP ────────────────────────────────────────────────────────
@@ -217,4 +233,8 @@ class WeddingScavengerHuntInfraStack(Stack):
         CfnOutput(self, "BackendInstanceId",
             value=instance.instance_id,
             description="EC2 instance ID",
+        )
+        CfnOutput(self, "LeaderboardBucketName",
+            value=leaderboard_bucket.bucket_name,
+            description="S3 bucket for leaderboard data — set LEADERBOARD_BUCKET env var to this value",
         )

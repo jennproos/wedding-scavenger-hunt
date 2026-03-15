@@ -1,14 +1,31 @@
 import json
 import os
-from typing import List
+import boto3
+from typing import List, Optional
 from datetime import datetime
 from pathlib import Path
+from botocore.exceptions import ClientError
 from models import Session, LeaderboardEntry
 
 _LEADERBOARD_PATH = Path(__file__).parent.parent / "leaderboard.json"
+_S3_KEY = "leaderboard.json"
+
+
+def _bucket() -> Optional[str]:
+    return os.environ.get("LEADERBOARD_BUCKET")
 
 
 def _read_data() -> dict:
+    bucket = _bucket()
+    if bucket:
+        s3 = boto3.client("s3")
+        try:
+            obj = s3.get_object(Bucket=bucket, Key=_S3_KEY)
+            return json.loads(obj["Body"].read())
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "NoSuchKey":
+                return {}
+            raise
     if not _LEADERBOARD_PATH.exists():
         return {}
     with open(_LEADERBOARD_PATH, "r") as f:
@@ -16,6 +33,11 @@ def _read_data() -> dict:
 
 
 def _write_data(data: dict) -> None:
+    bucket = _bucket()
+    if bucket:
+        s3 = boto3.client("s3")
+        s3.put_object(Bucket=bucket, Key=_S3_KEY, Body=json.dumps(data, default=str))
+        return
     with open(_LEADERBOARD_PATH, "w") as f:
         json.dump(data, f, default=str)
 
@@ -56,6 +78,10 @@ def get_entries() -> List[LeaderboardEntry]:
 
 
 def clear_all() -> None:
-    """Remove all leaderboard entries (used in tests)."""
+    bucket = _bucket()
+    if bucket:
+        s3 = boto3.client("s3")
+        s3.delete_object(Bucket=bucket, Key=_S3_KEY)
+        return
     if _LEADERBOARD_PATH.exists():
         _LEADERBOARD_PATH.unlink()

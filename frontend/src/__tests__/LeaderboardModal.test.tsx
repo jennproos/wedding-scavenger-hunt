@@ -25,6 +25,14 @@ const mockEntries = [
     start_time: '2026-03-10T12:05:00',
     completion_time: null,
   },
+  {
+    session_id: 'sess-3',
+    player_name: 'Carol',
+    clue_number: 4,
+    completed: false,
+    start_time: '2026-03-10T12:10:00',
+    completion_time: null,
+  },
 ]
 
 beforeEach(() => {
@@ -80,6 +88,35 @@ test('shows empty state when no entries', async () => {
   await waitFor(() => {
     expect(screen.getByText(/no players yet/i)).toBeInTheDocument()
   })
+})
+
+test('clicking Name header sorts entries by name A→Z', async () => {
+  vi.mocked(fetchLeaderboard).mockResolvedValue(mockEntries)
+  render(<LeaderboardModal isOpen={true} onClose={() => {}} />)
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
+  fireEvent.click(screen.getByRole('columnheader', { name: /name/i }))
+  const cells = screen.getAllByRole('cell').filter(c => ['Alice', 'Bob', 'Carol'].includes(c.textContent ?? ''))
+  expect(cells.map(c => c.textContent)).toEqual(['Alice', 'Bob', 'Carol'])
+})
+
+test('clicking Name header twice reverses to Z→A', async () => {
+  vi.mocked(fetchLeaderboard).mockResolvedValue(mockEntries)
+  render(<LeaderboardModal isOpen={true} onClose={() => {}} />)
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
+  fireEvent.click(screen.getByRole('columnheader', { name: /name/i }))
+  fireEvent.click(screen.getByRole('columnheader', { name: /name/i }))
+  const cells = screen.getAllByRole('cell').filter(c => ['Alice', 'Bob', 'Carol'].includes(c.textContent ?? ''))
+  expect(cells.map(c => c.textContent)).toEqual(['Carol', 'Bob', 'Alice'])
+})
+
+test('clicking Progress header sorts by most progress first', async () => {
+  vi.mocked(fetchLeaderboard).mockResolvedValue(mockEntries)
+  render(<LeaderboardModal isOpen={true} onClose={() => {}} />)
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
+  fireEvent.click(screen.getByRole('columnheader', { name: /progress/i }))
+  const cells = screen.getAllByRole('cell').filter(c => ['Alice', 'Bob', 'Carol'].includes(c.textContent ?? ''))
+  // Alice completed (highest), Carol clue 4, Bob clue 3
+  expect(cells.map(c => c.textContent)).toEqual(['Alice', 'Carol', 'Bob'])
 })
 
 test('close button calls onClose', async () => {

@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from models import StartRequest, StartResponse, ScanRequest, ScanResponse, DevRequest
 from services import session_service, stage_service, leaderboard_service
 
@@ -72,6 +72,25 @@ async def scan(request: ScanRequest):
 async def get_leaderboard():
     entries = leaderboard_service.get_entries()
     return [e.model_dump() for e in entries]
+
+
+@router.delete("/leaderboard")
+async def clear_leaderboard(request: Request):
+    expected = os.environ.get("ADMIN_SECRET", "")
+    auth = request.headers.get("Authorization", "")
+    if not expected or not auth.startswith("Bearer ") or auth[len("Bearer "):] != expected:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    leaderboard_service.clear_all()
+    return {"ok": True}
+
+
+@router.get("/admin/ping")
+async def admin_ping(request: Request):
+    expected = os.environ.get("ADMIN_SECRET", "")
+    auth = request.headers.get("Authorization", "")
+    if not expected or not auth.startswith("Bearer ") or auth[len("Bearer "):] != expected:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return {"ok": True}
 
 
 @router.get("/session/{session_id}")

@@ -109,6 +109,8 @@ body:has(.game-page) .copyright {
     font-size: 0.82rem;
     line-height: 1.4;
     padding: 17% 8% 54% 10%;
+    /* mobile: top=17%/1.7=10%H, bottom=(1-0.54/1.7)=68%H, shift 8% right */
+    clip-path: polygon(10% 10%, 90% 10%, 98% 68%, 18% 68%);
   }
 }
 
@@ -413,6 +415,9 @@ button:disabled {
   color: #3b2a1e;
   line-height: 1.45;
   text-align: left;
+  /* parallelogram: top-left, top-right, bottom-right, bottom-left */
+  /* Y% = padding-% / 1.7 (card aspect ratio); bottom shifts ~8% right */
+  clip-path: polygon(11% 15%, 78% 15%, 86% 68%, 19% 68%);
 }
 
 .clue-card-text p {

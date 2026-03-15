@@ -13,6 +13,7 @@ See [plan.md](plan.md) for full architecture and design details.
 **First time:**
 ```bash
 make install                        # creates backend/venv, pip install, npm install
+cp .env.example .env                # edit with your SSH key path
 cp frontend/.env.example frontend/.env.local
 cp backend/.env.example backend/.env
 ```
@@ -72,10 +73,10 @@ make deploy-frontend
 
 ### Backend deploy
 
-Requires your SSH key path:
+Set `SSH_KEY_PATH` in your root `.env` (copied from `.env.example`) and then:
 
 ```bash
-SSH_KEY_PATH=~/.ssh/wedding-hunt.pem make deploy-backend
+make deploy-backend
 ```
 
 Optional overrides:

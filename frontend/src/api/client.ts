@@ -60,6 +60,23 @@ export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
   return res.json() as Promise<LeaderboardEntry[]>
 }
 
+export async function verifyAdminPassword(password: string): Promise<void> {
+  const res = await fetch(`${API_URL}/admin/ping`, {
+    headers: { Authorization: `Bearer ${password}` },
+  })
+  if (res.status === 401) throw new ApiError(401, 'Incorrect password')
+  if (!res.ok) throw new Error(`Verify failed: ${res.status}`)
+}
+
+export async function clearLeaderboard(password: string): Promise<void> {
+  const res = await fetch(`${API_URL}/leaderboard`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${password}` },
+  })
+  if (res.status === 401) throw new ApiError(401, 'Incorrect password')
+  if (!res.ok) throw new Error(`Clear failed: ${res.status}`)
+}
+
 export async function devAdvance(session_id: string): Promise<ScanResponse> {
   const res = await fetch(`${API_URL}/dev/advance`, {
     method: 'POST',
