@@ -20,6 +20,7 @@
 }
 
 html {
+  height: 100%;
   overscroll-behavior: none;
 }
 
@@ -120,8 +121,6 @@ body:has(.game-page) .copyright {
     max-width: 400px;
   }
   .clue-card-text {
-    font-size: 0.82rem;
-    line-height: 1.4;
     padding: 17% 8% 54% 10%;
     /* mobile: top=17%/1.7=10%H, bottom=(1-0.54/1.7)=68%H, shift 8% right */
     clip-path: polygon(10% 10%, 90% 10%, 98% 68%, 18% 68%);
@@ -425,9 +424,9 @@ button:disabled {
   flex-direction: column;
   justify-content: flex-start;
   padding: 26% 22% 54% 11%;
-  font-size: 1.1rem;
+  font-size: clamp(0.68rem, 3.2vw, 1.1rem);
   color: #3b2a1e;
-  line-height: 1.45;
+  line-height: 1.4;
   text-align: left;
   /* parallelogram: top-left, top-right, bottom-right, bottom-left */
   /* Y% = padding-% / 1.7 (card aspect ratio); bottom shifts ~8% right */
@@ -472,8 +471,8 @@ button:disabled {
 
 /* Game page */
 .game-page {
-  position: relative;
-  height: 100dvh;
+  position: fixed;
+  inset: 0;
   min-height: unset;
   overflow: hidden;
   justify-content: flex-start;
@@ -497,7 +496,8 @@ button:disabled {
 
 /* Final page */
 .final-page {
-  position: relative;
+  position: fixed;
+  inset: 0;
   overflow: hidden;
   padding-bottom: 5rem;
 }
@@ -862,6 +862,7 @@ button:disabled {
 
 /* Enter code trigger */
 .btn-enter-code {
+  touch-action: manipulation;
   font-family: 'Manrope', system-ui, sans-serif;
   font-size: 0.7rem;
   font-weight: 700;

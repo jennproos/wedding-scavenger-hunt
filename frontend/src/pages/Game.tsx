@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClueCard } from '../components/ClueCard'
 import { CodeInput } from '../components/CodeInput'
@@ -17,6 +17,10 @@ export function Game() {
   const [leaderboardOpen, setLeaderboardOpen] = useState(false)
   const [codeModalOpen, setCodeModalOpen] = useState(false)
   const pendingRef = useRef<{ completed: boolean; next_clue?: string; is_final_clue?: boolean; session: typeof session } | null>(null)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const DEV = import.meta.env.VITE_DEV_OVERRIDE === 'true'
 

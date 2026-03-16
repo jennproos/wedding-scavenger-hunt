@@ -29,6 +29,7 @@ export function NameEntry() {
     setNameError('')
     setNudging(true)
     setFadingOut(true)
+    ;(document.activeElement as HTMLElement)?.blur()
     const fadeDelay = new Promise(resolve => setTimeout(resolve, 500))
     setLoading(true)
     try {
