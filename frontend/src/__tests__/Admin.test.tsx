@@ -14,6 +14,11 @@ vi.mock('../api/client', () => ({
   },
 }))
 
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate,
+}))
+
 import { Admin } from '../pages/Admin'
 import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword } from '../api/client'
 
@@ -48,6 +53,7 @@ beforeEach(() => {
   vi.mocked(fetchLeaderboard).mockReset()
   vi.mocked(clearLeaderboard).mockReset()
   vi.mocked(verifyAdminPassword).mockReset()
+  mockNavigate.mockReset()
 })
 
 async function authenticate() {
@@ -58,6 +64,12 @@ async function authenticate() {
 }
 
 // --- Gate tests ---
+
+test('home button navigates to /', () => {
+  render(<Admin />)
+  fireEvent.click(screen.getByRole('button', { name: /home/i }))
+  expect(mockNavigate).toHaveBeenCalledWith('/')
+})
 
 test('shows password form on mount', () => {
   render(<Admin />)
@@ -109,17 +121,27 @@ test('shows empty state when no entries', async () => {
   })
 })
 
-test('has "Clear Leaderboard" button', async () => {
-  vi.mocked(fetchLeaderboard).mockResolvedValue([])
+test('has "Clear Leaderboard" button when entries exist', async () => {
+  vi.mocked(fetchLeaderboard).mockResolvedValue(mockEntries)
   render(<Admin />)
   await authenticate()
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
   expect(screen.getByRole('button', { name: /clear leaderboard/i })).toBeInTheDocument()
 })
 
-test('clicking clear shows confirm buttons', async () => {
+test('hides "Clear Leaderboard" button when no entries', async () => {
   vi.mocked(fetchLeaderboard).mockResolvedValue([])
   render(<Admin />)
   await authenticate()
+  await waitFor(() => expect(screen.getByText(/no players yet/i)).toBeInTheDocument())
+  expect(screen.queryByRole('button', { name: /clear leaderboard/i })).not.toBeInTheDocument()
+})
+
+test('clicking clear shows confirm buttons', async () => {
+  vi.mocked(fetchLeaderboard).mockResolvedValue(mockEntries)
+  render(<Admin />)
+  await authenticate()
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
   fireEvent.click(screen.getByRole('button', { name: /clear leaderboard/i }))
   expect(screen.getByRole('button', { name: /confirm clear/i })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
@@ -127,10 +149,11 @@ test('clicking clear shows confirm buttons', async () => {
 })
 
 test('clicking confirm clear calls clearLeaderboard with stored password', async () => {
-  vi.mocked(fetchLeaderboard).mockResolvedValue([])
+  vi.mocked(fetchLeaderboard).mockResolvedValue(mockEntries)
   vi.mocked(clearLeaderboard).mockResolvedValue(undefined)
   render(<Admin />)
   await authenticate()
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
   fireEvent.click(screen.getByRole('button', { name: /clear leaderboard/i }))
   fireEvent.click(screen.getByRole('button', { name: /confirm clear/i }))
   await waitFor(() => {
@@ -139,11 +162,12 @@ test('clicking confirm clear calls clearLeaderboard with stored password', async
 })
 
 test('shows error on 401 from clear', async () => {
-  vi.mocked(fetchLeaderboard).mockResolvedValue([])
+  vi.mocked(fetchLeaderboard).mockResolvedValue(mockEntries)
   const { ApiError } = await import('../api/client')
   vi.mocked(clearLeaderboard).mockRejectedValue(new ApiError(401, 'Incorrect password'))
   render(<Admin />)
   await authenticate()
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
   fireEvent.click(screen.getByRole('button', { name: /clear leaderboard/i }))
   fireEvent.click(screen.getByRole('button', { name: /confirm clear/i }))
   await waitFor(() => {
@@ -152,9 +176,10 @@ test('shows error on 401 from clear', async () => {
 })
 
 test('hides confirm area on cancel', async () => {
-  vi.mocked(fetchLeaderboard).mockResolvedValue([])
+  vi.mocked(fetchLeaderboard).mockResolvedValue(mockEntries)
   render(<Admin />)
   await authenticate()
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
   fireEvent.click(screen.getByRole('button', { name: /clear leaderboard/i }))
   expect(screen.getByRole('button', { name: /confirm clear/i })).toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
@@ -179,6 +204,17 @@ test('clicking Progress header sorts by most progress first', async () => {
   fireEvent.click(screen.getByRole('columnheader', { name: /progress/i }))
   const cells = screen.getAllByRole('cell').filter(c => ['Alice', 'Bob', 'Carol'].includes(c.textContent ?? ''))
   expect(cells.map(c => c.textContent)).toEqual(['Alice', 'Carol', 'Bob'])
+})
+
+test('clicking refresh button re-fetches leaderboard', async () => {
+  vi.mocked(fetchLeaderboard).mockResolvedValueOnce(mockEntries).mockResolvedValueOnce([])
+  render(<Admin />)
+  await authenticate()
+  await waitFor(() => expect(screen.getByText('Alice')).toBeInTheDocument())
+  fireEvent.click(screen.getByRole('button', { name: /refresh/i }))
+  await waitFor(() => {
+    expect(fetchLeaderboard).toHaveBeenCalledTimes(2)
+  })
 })
 
 test('refetches leaderboard on success', async () => {

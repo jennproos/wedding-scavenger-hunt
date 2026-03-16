@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword, ApiError } from '../api/client'
+import homeIcon from '../assets/stickers/Home.svg'
 import type { LeaderboardEntry } from '../api/client'
 
 type SortCol = 'name' | 'progress' | null
@@ -31,6 +33,7 @@ function formatDuration(startTime: string, completionTime: string): string {
 }
 
 export function Admin() {
+  const navigate = useNavigate()
   const [authedPassword, setAuthedPassword] = useState('')
   const [passwordInput, setPasswordInput] = useState('')
   const [authError, setAuthError] = useState('')
@@ -118,6 +121,9 @@ export function Admin() {
   if (!authedPassword) {
     return (
       <div className="page">
+        <button className="btn-home" onClick={() => navigate('/')} aria-label="Home" style={{ alignSelf: 'flex-start' }}>
+          <img src={homeIcon} className="btn-home-house" alt="" />
+        </button>
         <h1>Admin</h1>
         <input
           type="password"
@@ -136,9 +142,20 @@ export function Admin() {
 
   return (
     <div className="page">
+      <button className="btn-home" onClick={() => navigate('/')} aria-label="Home">
+        <img src={homeIcon} className="btn-home-house" alt="" />
+      </button>
       <div className="leaderboard-card" style={{ width: '100%', maxWidth: 600 }}>
         <div className="leaderboard-header">
           <h1 className="leaderboard-title">Admin</h1>
+          <button
+            className="admin-refresh-btn"
+            onClick={loadLeaderboard}
+            disabled={loading}
+            aria-label="Refresh"
+          >
+            ↻
+          </button>
         </div>
         {loading ? (
           <p className="leaderboard-loading">Loading...</p>
@@ -186,9 +203,11 @@ export function Admin() {
         )}
         <div style={{ marginTop: '1.5rem' }}>
           {!showConfirm ? (
-            <button className="btn-enter-code" onClick={handleClearClick}>
-              Clear Leaderboard
-            </button>
+            entries.length > 0 && (
+              <button className="btn-enter-code" onClick={handleClearClick}>
+                Clear Leaderboard
+              </button>
+            )
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
               {clearError && <p style={{ color: '#e05c5c', margin: 0 }}>{clearError}</p>}

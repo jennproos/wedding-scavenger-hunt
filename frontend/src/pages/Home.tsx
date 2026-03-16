@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { removeLeaderboardEntry } from '../api/client'
 import { useSession } from '../context/SessionContext'
 import heartsPiercedByAnArrow from '../assets/stickers/Hearts_Pierced_By_An_Arrow.svg'
 
@@ -30,6 +31,9 @@ export function Home() {
   }
 
   async function handleNewHunt() {
+    if (session?.session_id) {
+      removeLeaderboardEntry(session.session_id)
+    }
     clearSession()
     setFadingOut(true)
     await new Promise(resolve => setTimeout(resolve, 300))

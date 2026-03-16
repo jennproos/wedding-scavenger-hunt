@@ -40,8 +40,13 @@ export function Game() {
     [session, clearSession, navigate],
   )
 
-  const handleSuccessReady = useCallback(() => {
+  const closeCodeModal = useCallback(() => {
     setCodeModalOpen(false)
+    window.scrollTo(0, 0)
+  }, [])
+
+  const handleSuccessReady = useCallback(() => {
+    closeCodeModal()
     const pending = pendingRef.current
     if (!pending || !pending.session) return
     pendingRef.current = null
@@ -61,7 +66,7 @@ export function Game() {
         })
       }, 400)
     }
-  }, [setSession, navigate])
+  }, [closeCodeModal, setSession, navigate])
 
   const handleDevAdvance = useCallback(async () => {
     if (!session) return
@@ -153,9 +158,9 @@ export function Game() {
         </div>
       )}
       {codeModalOpen && (
-        <div className="code-entry-overlay" onClick={() => setCodeModalOpen(false)}>
+        <div className="code-entry-overlay" onClick={closeCodeModal}>
           <div className="code-entry-sheet" onClick={e => e.stopPropagation()}>
-            <button className="code-entry-close" onClick={() => setCodeModalOpen(false)} aria-label="Close">✕</button>
+            <button className="code-entry-close" onClick={closeCodeModal} aria-label="Close">✕</button>
             <CodeInput key={clueKey} onSubmit={handleScan} onSuccessReady={handleSuccessReady} />
           </div>
         </div>

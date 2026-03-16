@@ -39,22 +39,22 @@ import tag2        from '../assets/stickers/Tag_02.svg'
 import note        from '../assets/stickers/Note.svg'
 import costume     from '../assets/stickers/Costume.svg'
 import church      from '../assets/stickers/Church.svg'
-import wedding1   from '../assets/stickers/Wedding illustration-01.svg'
-import wedding2   from '../assets/stickers/Wedding illustration-02.svg'
-import wedding3   from '../assets/stickers/Wedding illustration-03.svg'
-import wedding4   from '../assets/stickers/Wedding illustration-04.svg'
-import wedding5   from '../assets/stickers/Wedding illustration-05.svg'
-import wedding6   from '../assets/stickers/Wedding illustration-06.svg'
-import wedding7   from '../assets/stickers/Wedding illustration-07.svg'
-import wedding8   from '../assets/stickers/Wedding illustration-08.svg'
-import wedding9   from '../assets/stickers/Wedding illustration-09.svg'
-import wedding10  from '../assets/stickers/Wedding illustration-10.svg'
+import asset1      from '../assets/stickers/Asset 1wedding.svg'
+import asset5      from '../assets/stickers/Asset 5wedding.svg'
+import asset10     from '../assets/stickers/Asset 10wedding.svg'
+import asset15     from '../assets/stickers/Asset 15wedding.svg'
+import asset20     from '../assets/stickers/Asset 20wedding.svg'
+import asset25     from '../assets/stickers/Asset 25wedding.svg'
+import asset30     from '../assets/stickers/Asset 30wedding.svg'
+import asset40     from '../assets/stickers/Asset 40wedding.svg'
+import asset50     from '../assets/stickers/Asset 50wedding.svg'
+import asset60     from '../assets/stickers/Asset 60wedding.svg'
 
 const STICKERS = [
   // Row 1 — top
   { src: bouquet1,   top: '1%',  left: '2%',  size: 120, rotate: -20, mobile: true  },
   { src: floral2,    top: '4%',  left: '24%', size: 72,  rotate:  15, mobile: false },
-  { src: wedding1,   top: '2%',  left: '46%', size: 65,  rotate:  -8, mobile: false },
+  { src: asset1,     top: '2%',  left: '46%', size: 65,  rotate:  -8, mobile: false },
   { src: floral3,    top: '5%',  left: '67%', size: 78,  rotate:  20, mobile: true  },
   { src: wreath1,    top: '1%',  left: '84%', size: 100, rotate:  12, mobile: false },
   // Gap 1 (~10-16%)
@@ -75,9 +75,9 @@ const STICKERS = [
   { src: glasses,    top: '30%', left: '18%', size: 62,  rotate:  22, mobile: false },
   { src: groomBride1,top: '27%', left: '30%', size: 78,  rotate:  -8, mobile: true  },
   { src: wreath3,    top: '32%', left: '46%', size: 82,  rotate: -14, mobile: false },
-  { src: wedding2,   top: '36%', left: '58%', size: 65,  rotate:  14, mobile: false },
+  { src: asset5,     top: '36%', left: '58%', size: 65,  rotate:  14, mobile: false },
   { src: brideShoe,  top: '29%', left: '74%', size: 60,  rotate:  10, mobile: false },
-  { src: wedding6,   top: '35%', left: '82%', size: 68,  rotate:  16, mobile: false },
+  { src: asset25,    top: '35%', left: '82%', size: 68,  rotate:  16, mobile: false },
   // Row 3 — center (~40-44%)
   { src: bird,       top: '42%', left: '3%',  size: 65,  rotate:  25, mobile: true  },
   { src: floral5,    top: '40%', left: '28%', size: 82,  rotate: -28, mobile: false },
@@ -89,21 +89,21 @@ const STICKERS = [
   { src: floral7,    top: '51%', left: '20%', size: 74,  rotate:  20, mobile: false },
   { src: groom,      top: '50%', left: '46%', size: 70,  rotate:  -6, mobile: true  },
   { src: wreath4,    top: '52%', left: '70%', size: 78,  rotate:   8, mobile: false },
-  { src: wedding7,   top: '54%', left: '86%', size: 70,  rotate: -20, mobile: false },
+  { src: asset30,    top: '54%', left: '86%', size: 70,  rotate: -20, mobile: false },
   { src: groomBride2,top: '57%', left: '32%', size: 76,  rotate:  10, mobile: false },
   // Row 4 — lower-mid (~60-65%)
   { src: floral4,    top: '62%', left: '10%', size: 90,  rotate:  15, mobile: true  },
   { src: ribbon,     top: '60%', left: '38%', size: 78,  rotate: -25, mobile: false },
-  { src: wedding3,   top: '65%', left: '64%', size: 72,  rotate:  20, mobile: false },
+  { src: asset10,    top: '65%', left: '64%', size: 72,  rotate:  20, mobile: false },
   { src: wreath2,    top: '62%', left: '84%', size: 88,  rotate: -12, mobile: true  },
   // Gap 4 (~68-79%)
-  { src: wedding8,   top: '68%', left: '6%',  size: 66,  rotate:  20, mobile: false },
-  { src: wedding4,   top: '71%', left: '22%', size: 70,  rotate: -18, mobile: false },
+  { src: asset40,    top: '68%', left: '6%',  size: 66,  rotate:  20, mobile: false },
+  { src: asset15,    top: '71%', left: '22%', size: 70,  rotate: -18, mobile: false },
   { src: wreath6,    top: '67%', left: '42%', size: 82,  rotate: -10, mobile: true  },
   { src: floral8,    top: '73%', left: '50%', size: 68,  rotate:  15, mobile: false },
   { src: bride,      top: '70%', left: '76%', size: 74,  rotate:  -8, mobile: false },
-  { src: wedding9,   top: '75%', left: '64%', size: 70,  rotate: -16, mobile: false },
-  { src: wedding10,  top: '78%', left: '18%', size: 68,  rotate:  24, mobile: false },
+  { src: asset50,    top: '75%', left: '64%', size: 70,  rotate: -16, mobile: false },
+  { src: asset60,    top: '78%', left: '18%', size: 68,  rotate:  24, mobile: false },
   { src: church,     top: '76%', left: '86%', size: 74,  rotate:   6, mobile: false },
   // Row 5 — bottom (~81-89%)
   { src: bouquet2,   top: '81%', left: '5%',  size: 112, rotate: -12, mobile: true  },
@@ -112,7 +112,7 @@ const STICKERS = [
   { src: floral9,    top: '82%', left: '50%', size: 68,  rotate: -15, mobile: true  },
   { src: letter,     top: '83%', left: '70%', size: 65,  rotate:  22, mobile: false },
   { src: floralGlass,top: '87%', left: '60%', size: 62,  rotate: -20, mobile: false },
-  { src: wedding5,   top: '81%', left: '86%', size: 78,  rotate:  -8, mobile: false },
+  { src: asset20,    top: '81%', left: '86%', size: 78,  rotate:  -8, mobile: false },
 ]
 
 export function StickerBackground() {

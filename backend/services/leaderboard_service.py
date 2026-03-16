@@ -42,6 +42,15 @@ def _write_data(data: dict) -> None:
         json.dump(data, f, default=str)
 
 
+def name_exists(name: str) -> bool:
+    data = _read_data()
+    name_lower = name.strip().lower()
+    return any(
+        entry.get("player_name", "").strip().lower() == name_lower
+        for entry in data.values()
+    )
+
+
 def save_entry(session: Session, clue_number: int) -> None:
     data = _read_data()
     data[session.session_id] = {
@@ -75,6 +84,13 @@ def get_entries() -> List[LeaderboardEntry]:
     in_progress.sort(key=in_progress_key)
 
     return completed + in_progress
+
+
+def remove_entry(session_id: str) -> None:
+    data = _read_data()
+    if session_id in data:
+        del data[session_id]
+        _write_data(data)
 
 
 def clear_all() -> None:

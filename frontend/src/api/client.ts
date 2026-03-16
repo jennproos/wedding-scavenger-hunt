@@ -29,6 +29,7 @@ export async function startGame(playerName: string): Promise<StartResponse> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ player_name: playerName }),
   })
+  if (res.status === 409) throw new ApiError(409, 'That name is already on the hunt!')
   if (!res.ok) throw new Error(`Failed to start game: ${res.status}`)
   return res.json() as Promise<StartResponse>
 }
@@ -75,6 +76,10 @@ export async function clearLeaderboard(password: string): Promise<void> {
   })
   if (res.status === 401) throw new ApiError(401, 'Incorrect password')
   if (!res.ok) throw new Error(`Clear failed: ${res.status}`)
+}
+
+export async function removeLeaderboardEntry(session_id: string): Promise<void> {
+  await fetch(`${API_URL}/leaderboard/${session_id}`, { method: 'DELETE' })
 }
 
 export async function devAdvance(session_id: string): Promise<ScanResponse> {

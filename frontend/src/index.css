@@ -19,11 +19,19 @@
   box-sizing: border-box;
 }
 
+html {
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   background-color: var(--color-bg);
   color: var(--color-text);
+}
+
+body:has(.game-page) {
+  overflow: hidden;
 }
 
 a {
@@ -100,7 +108,13 @@ body:has(.game-page) .copyright {
   }
   .game-page {
     padding: 0rem 0.75rem 0.5rem;
-    gap: 0.25rem;
+    gap: 0rem;
+  }
+  .game-page .clue-wrapper{
+    margin-top: -1rem;
+  }
+  .game-input-area {
+    margin-top: -1.25rem;
   }
   .game-page .clue-card {
     max-width: 400px;
@@ -488,6 +502,14 @@ button:disabled {
   padding-bottom: 5rem;
 }
 
+.final-player-name-bar {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
 .final-content {
   position: relative;
   z-index: 10;
@@ -823,7 +845,6 @@ button:disabled {
   justify-content: flex-start;
   align-items: center;
   z-index: 4;
-  animation: fade-in 0.8s ease-out 2.8s both;
 }
 
 .game-page .player-name-bar {
@@ -1070,7 +1091,7 @@ button:disabled {
 }
 
 .player-name-text {
-  color: var(--color-text);
+  color: #e8d4a0;
 }
 
 .trophy-btn {
@@ -1122,6 +1143,33 @@ button:disabled {
 .leaderboard-title {
   font-size: 1.4rem;
   margin: 0;
+}
+
+.admin-refresh-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.7rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.2s;
+  line-height: 1;
+  margin-top: -1rem;
+}
+
+.admin-refresh-btn:hover {
+  opacity: 1;
+}
+
+.admin-refresh-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .leaderboard-close {

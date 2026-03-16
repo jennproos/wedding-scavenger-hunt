@@ -24,7 +24,7 @@ REPO_URL = "https://github.com/jennproos/wedding-scavenger-hunt.git"
 
 
 def _backend_user_data(leaderboard_bucket_name: str) -> str:
-    """EC2 user data: installs Python, clones repo, starts uvicorn + nginx."""
+    """EC2 user data: installs Python, clones repo, starts uvicorn + nginx + HTTPS."""
     return f"""#!/bin/bash
 set -euo pipefail
 
@@ -36,9 +36,12 @@ cd /home/ec2-user
 git clone {REPO_URL} app
 chown -R ec2-user:ec2-user app
 
-# Install backend dependencies
+# Install backend dependencies (includes boto3 for S3 leaderboard)
 cd app/backend
 pip3 install -r requirements.txt
+
+# Install certbot with Route 53 DNS plugin for automated HTTPS
+pip3 install certbot certbot-nginx certbot-dns-route53
 
 # Systemd service for uvicorn
 cat > /etc/systemd/system/scavenger.service << 'EOF'
@@ -66,7 +69,7 @@ EOF
 systemctl daemon-reload
 systemctl enable --now scavenger
 
-# Nginx reverse proxy (HTTP only — add HTTPS via certbot after DNS propagates)
+# Nginx: HTTP-only config first (required before certbot can write the HTTPS config)
 cat > /etc/nginx/conf.d/scavenger.conf << 'EOF'
 server {{
     listen 80;
@@ -84,9 +87,46 @@ EOF
 
 systemctl enable --now nginx
 
-# After DNS propagates, SSH in and run:
-#   sudo dnf install -y certbot python3-certbot-nginx
-#   sudo certbot --nginx -d {BACKEND_SUBDOMAIN}.{DOMAIN_NAME}
+# Obtain TLS certificate via Route 53 DNS challenge.
+# This works immediately — no need to wait for the A record to propagate
+# because the DNS-01 challenge writes a TXT record via the AWS API directly.
+certbot certonly \
+  --dns-route53 \
+  --dns-route53-propagation-seconds 30 \
+  --non-interactive \
+  --agree-tos \
+  --email noreply@{DOMAIN_NAME} \
+  -d {BACKEND_SUBDOMAIN}.{DOMAIN_NAME}
+
+# Swap nginx config to HTTPS, redirect HTTP → HTTPS
+cat > /etc/nginx/conf.d/scavenger.conf << 'EOF'
+server {{
+    listen 80;
+    server_name {BACKEND_SUBDOMAIN}.{DOMAIN_NAME};
+    return 301 https://$host$request_uri;
+}}
+
+server {{
+    listen 443 ssl;
+    server_name {BACKEND_SUBDOMAIN}.{DOMAIN_NAME};
+
+    ssl_certificate /etc/letsencrypt/live/{BACKEND_SUBDOMAIN}.{DOMAIN_NAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{BACKEND_SUBDOMAIN}.{DOMAIN_NAME}/privkey.pem;
+
+    location / {{
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }}
+}}
+EOF
+
+systemctl reload nginx
+
+# Auto-renew cert daily at 3 AM; reload nginx on success
+echo "0 3 * * * root certbot renew --quiet --post-hook 'systemctl reload nginx'" > /etc/cron.d/certbot-renew
 """
 
 
@@ -114,11 +154,30 @@ class WeddingScavengerHuntInfraStack(Stack):
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
         )
 
-        # ── IAM role for EC2 (grants S3 read/write on leaderboard bucket) ─────
+        # ── IAM role for EC2 ──────────────────────────────────────────────────
         instance_role = iam.Role(self, "BackendInstanceRole",
             assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
         )
+
+        # S3: read/write leaderboard data
         leaderboard_bucket.grant_read_write(instance_role)
+
+        # Route 53: needed by certbot-dns-route53 to complete DNS-01 HTTPS challenge
+        instance_role.add_to_policy(iam.PolicyStatement(
+            actions=["route53:GetChange"],
+            resources=["arn:aws:route53:::change/*"],
+        ))
+        instance_role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "route53:ChangeResourceRecordSets",
+                "route53:ListResourceRecordSets",
+            ],
+            resources=[f"arn:aws:route53:::hostedzone/{HOSTED_ZONE_ID}"],
+        ))
+        instance_role.add_to_policy(iam.PolicyStatement(
+            actions=["route53:ListHostedZones"],
+            resources=["*"],
+        ))
 
         # ── S3 bucket for frontend static files ───────────────────────────────
         frontend_bucket = s3.Bucket(self, "FrontendBucket",

@@ -5,6 +5,7 @@ import { SessionProvider } from '../context/SessionContext'
 
 vi.mock('../api/client', () => ({
   startGame: vi.fn(),
+  removeLeaderboardEntry: vi.fn().mockResolvedValue(undefined),
 }))
 
 import { Home } from '../pages/Home'
@@ -97,4 +98,14 @@ test('clicking Start a new hunt in resume modal clears session and navigates to 
     expect(screen.getByTestId('name-page')).toBeInTheDocument()
   })
   expect(localStorage.getItem('scavenger_session')).toBeNull()
+})
+
+test('clicking Start a new hunt calls removeLeaderboardEntry with the old session_id', async () => {
+  const { removeLeaderboardEntry } = await import('../api/client')
+  renderHome({ withSession: true })
+  fireEvent.click(screen.getByRole('button'))
+  fireEvent.click(screen.getByText(/new hunt/i))
+  await waitFor(() => {
+    expect(removeLeaderboardEntry).toHaveBeenCalledWith('sess-1')
+  })
 })

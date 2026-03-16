@@ -55,6 +55,44 @@ async def test_start_accepts_name_exactly_30_chars(client):
 
 
 @pytest.mark.anyio
+async def test_start_rejects_duplicate_player_name(client):
+    await client.post("/start", json={"player_name": "Alice"})
+    response = await client.post("/start", json={"player_name": "Alice"})
+    assert response.status_code == 409
+
+
+@pytest.mark.anyio
+async def test_start_rejects_duplicate_name_case_insensitive(client):
+    await client.post("/start", json={"player_name": "Alice"})
+    response = await client.post("/start", json={"player_name": "alice"})
+    assert response.status_code == 409
+
+
+@pytest.mark.anyio
+async def test_delete_leaderboard_entry_removes_player(client):
+    r = await client.post("/start", json={"player_name": "Alice"})
+    session_id = r.json()["session_id"]
+    del_r = await client.delete(f"/leaderboard/{session_id}")
+    assert del_r.status_code == 200
+    r2 = await client.post("/start", json={"player_name": "Alice"})
+    assert r2.status_code == 200
+
+
+@pytest.mark.anyio
+async def test_delete_leaderboard_entry_idempotent(client):
+    del_r = await client.delete("/leaderboard/nonexistent-id")
+    assert del_r.status_code == 200
+
+
+@pytest.mark.anyio
+async def test_start_allows_different_names(client):
+    r1 = await client.post("/start", json={"player_name": "Alice"})
+    r2 = await client.post("/start", json={"player_name": "Bob"})
+    assert r1.status_code == 200
+    assert r2.status_code == 200
+
+
+@pytest.mark.anyio
 async def test_start_creates_unique_sessions(client):
     r1 = await client.post("/start", json={"player_name": "Alice"})
     r2 = await client.post("/start", json={"player_name": "Bob"})

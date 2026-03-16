@@ -9,6 +9,8 @@ router = APIRouter()
 
 @router.post("/start", response_model=StartResponse)
 async def start(request: StartRequest):
+    if leaderboard_service.name_exists(request.player_name):
+        raise HTTPException(status_code=409, detail="That name is already on the hunt!")
     first_stage_id = stage_service.get_first_stage_id()
     session = session_service.create_session(
         starting_stage=first_stage_id,
@@ -72,6 +74,12 @@ async def scan(request: ScanRequest):
 async def get_leaderboard():
     entries = leaderboard_service.get_entries()
     return [e.model_dump() for e in entries]
+
+
+@router.delete("/leaderboard/{session_id}")
+async def delete_leaderboard_entry(session_id: str):
+    leaderboard_service.remove_entry(session_id)
+    return {"ok": True}
 
 
 @router.delete("/leaderboard")

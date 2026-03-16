@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { startGame } from '../api/client'
+import { startGame, ApiError } from '../api/client'
 import { useSession } from '../context/SessionContext'
 import heartsPiercedByAnArrow from '../assets/stickers/Hearts_Pierced_By_An_Arrow.svg'
+import swirlyArrow from '../assets/stickers/Swirly_Arrow.png'
 
 export function NameEntry() {
   const navigate = useNavigate()
@@ -41,6 +42,15 @@ export function NameEntry() {
         player_name: data.player_name,
       })
       navigate('/game')
+    } catch (err) {
+      setLoading(false)
+      setFadingOut(false)
+      setNudging(false)
+      if (err instanceof ApiError && err.status === 409) {
+        setNameError('That name is already on the hunt! Try a different one.')
+      } else {
+        throw err
+      }
     } finally {
       setLoading(false)
     }
@@ -48,6 +58,9 @@ export function NameEntry() {
 
   return (
     <div className={`page name-entry-page${fadingOut ? ' fading-out' : ''}`}>
+      <button className="btn-home" onClick={() => navigate('/')} aria-label="Back">
+        <img src={swirlyArrow} alt="" />
+      </button>
       <div className="name-entry-hero">
         <p className="home-subtitle">Who's on the hunt?</p>
       </div>
@@ -74,6 +87,7 @@ export function NameEntry() {
         className={`btn-start${nudging ? ' btn-start--nudging' : ''}`}
         onClick={handleSubmit}
         disabled={loading}
+        aria-label="Start the hunt"
       >
         <img src={heartsPiercedByAnArrow} className="btn-start-img" alt="" />
       </button>
