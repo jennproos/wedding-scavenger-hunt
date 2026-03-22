@@ -35,7 +35,7 @@ export function Final() {
       <LeaderboardModal isOpen={leaderboardOpen} onClose={() => setLeaderboardOpen(false)} />
       <div className="final-content">
         <img src={familyPhoto} className="final-photo" alt="The happy couple" />
-        <h1 className="final-title">You did it!</h1>
+        <h1 className="final-title">YOU DID IT! 🎉</h1>
         <p className="final-subtitle">Every clue cracked. Every code conquered.</p>
         <p className="final-subtitle">The treasure is yours — if you dare open it.</p>
         <p className="treasure-label">The lock code is:</p>

@@ -178,9 +178,9 @@ export function Admin() {
           </button>
         </div>
         {loading ? (
-          <p className="leaderboard-loading">Loading...</p>
+          <p className="leaderboard-loading">loading...</p>
         ) : entries.length === 0 ? (
-          <p className="leaderboard-empty">No players yet</p>
+          <p className="leaderboard-empty">no players yet</p>
         ) : (
           <table className="leaderboard-table">
             <thead>
@@ -239,7 +239,7 @@ export function Admin() {
           {!showConfirm ? (
             entries.length > 0 && (
               <button className="btn-enter-code" onClick={handleClearClick}>
-                Clear Leaderboard
+                clear leaderboard
               </button>
             )
           ) : (
@@ -247,10 +247,10 @@ export function Admin() {
               {clearError && <p style={{ color: '#e05c5c', margin: 0 }}>{clearError}</p>}
               <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button className="btn-enter-code" onClick={handleConfirmClear} disabled={clearing}>
-                  Confirm Clear
+                  confirm Clear
                 </button>
                 <button className="btn-enter-code" onClick={handleCancel} style={{ opacity: 0.7 }}>
-                  Cancel
+                  cancel
                 </button>
               </div>
             </div>
