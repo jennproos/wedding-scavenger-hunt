@@ -69,7 +69,7 @@ export function NameEntry() {
         <input
           className="name-input"
           type="text"
-          placeholder="Your name"
+          placeholder="your name"
           maxLength={31}
           value={playerName}
           onChange={e => {
@@ -77,7 +77,7 @@ export function NameEntry() {
             if (nameError) setNameError('')
           }}
           onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
-          aria-label="Your name"
+          aria-label="your name"
           autoFocus
         />
         {nameError && (

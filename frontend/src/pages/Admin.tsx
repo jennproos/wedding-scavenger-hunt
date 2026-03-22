@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword, ApiError } from '../api/client'
+import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword, removeLeaderboardEntry, ApiError } from '../api/client'
 import homeIcon from '../assets/stickers/Home.svg'
 import type { LeaderboardEntry } from '../api/client'
 
@@ -25,11 +25,18 @@ function parseUTC(s: string): Date {
   return new Date(s.endsWith('Z') || s.includes('+') ? s : s + 'Z')
 }
 
+function formatTimestamp(timeStr: string): string {
+  return parseUTC(timeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+}
+
 function formatDuration(startTime: string, completionTime: string): string {
-  const start = parseUTC(startTime).getTime()
-  const end = parseUTC(completionTime).getTime()
-  const mins = Math.round((end - start) / 60000)
-  return `${mins} min`
+  const secs = Math.round((parseUTC(completionTime).getTime() - parseUTC(startTime).getTime()) / 1000)
+  const h = Math.floor(secs / 3600)
+  const m = Math.floor((secs % 3600) / 60)
+  const s = secs % 60
+  if (h > 0) return `${h}h ${m}m ${s}s`
+  if (m > 0) return `${m}m ${s}s`
+  return `${s}s`
 }
 
 export function Admin() {
@@ -46,12 +53,20 @@ export function Admin() {
   const [clearing, setClearing] = useState(false)
   const [sortCol, setSortCol] = useState<SortCol>(null)
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [pendingDelete, setPendingDelete] = useState<LeaderboardEntry | null>(null)
 
   function loadLeaderboard() {
     setLoading(true)
     fetchLeaderboard()
       .then(setEntries)
       .finally(() => setLoading(false))
+  }
+
+  async function handleDeleteEntry() {
+    if (!pendingDelete) return
+    await removeLeaderboardEntry(pendingDelete.session_id)
+    setEntries(prev => prev.filter(e => e.session_id !== pendingDelete.session_id))
+    setPendingDelete(null)
   }
 
   useEffect(() => {
@@ -120,19 +135,22 @@ export function Admin() {
 
   if (!authedPassword) {
     return (
-      <div className="page">
-        <button className="btn-home" onClick={() => navigate('/')} aria-label="Home" style={{ alignSelf: 'flex-start' }}>
-          <img src={homeIcon} className="btn-home-house" alt="" />
-        </button>
-        <h1>Admin</h1>
+      <div className="page admin-page">
+        <div className="admin-nav">
+          <button className="btn-home" onClick={() => navigate('/')} aria-label="Home">
+            <img src={homeIcon} className="btn-home-house" alt="" />
+          </button>
+          <span className="admin-nav-title">Admin</span>
+        </div>
         <input
           type="password"
-          placeholder="Admin password"
+          placeholder="admin password"
           value={passwordInput}
           onChange={e => setPasswordInput(e.target.value)}
-          style={{ padding: '0.5rem', borderRadius: 6, border: 'none', fontSize: '1rem' }}
+          onKeyDown={e => { if (e.key === 'Enter') handleEnter() }}
+          className="name-input"
         />
-        {authError && <p style={{ color: '#e05c5c', margin: '0.5rem 0 0' }}>{authError}</p>}
+        {authError && <p className="name-error">{authError}</p>}
         <button className="btn-enter-code" onClick={handleEnter} disabled={verifying}>
           Enter
         </button>
@@ -141,13 +159,15 @@ export function Admin() {
   }
 
   return (
-    <div className="page">
-      <button className="btn-home" onClick={() => navigate('/')} aria-label="Home">
-        <img src={homeIcon} className="btn-home-house" alt="" />
-      </button>
+    <div className="page admin-page">
+      <div className="admin-nav">
+        <button className="btn-home" onClick={() => navigate('/')} aria-label="Home">
+          <img src={homeIcon} className="btn-home-house" alt="" />
+        </button>
+        <span className="admin-nav-title">Admin</span>
+      </div>
       <div className="leaderboard-card" style={{ width: '100%', maxWidth: 600 }}>
         <div className="leaderboard-header">
-          <h1 className="leaderboard-title">Admin</h1>
           <button
             className="admin-refresh-btn"
             onClick={loadLeaderboard}
@@ -180,6 +200,8 @@ export function Admin() {
                   Progress{indicator('progress')}
                 </th>
                 <th>Started</th>
+                <th>Time</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -187,14 +209,26 @@ export function Admin() {
                 <tr key={entry.session_id}>
                   <td>{entry.player_name}</td>
                   <td>
-                    {entry.completed ? 'Done!' : `Clue ${entry.clue_number}`}
+                    {entry.completed ? 'done!' : `clue ${entry.clue_number}`}
+                  </td>
+                  <td>
+                    {entry.start_time ? formatTimestamp(entry.start_time) : '—'}
                   </td>
                   <td>
                     {entry.completed && entry.start_time && entry.completion_time
                       ? formatDuration(entry.start_time, entry.completion_time)
-                      : entry.start_time
-                      ? `${Math.round((Date.now() - parseUTC(entry.start_time).getTime()) / 60000)} min ago`
                       : '—'}
+                  </td>
+                  <td>
+                    <button className="admin-delete-btn" onClick={() => setPendingDelete(entry)} aria-label={`Delete ${entry.player_name}`}>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14H6L5 6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                        <path d="M9 6V4h6v2" />
+                      </svg>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -223,6 +257,17 @@ export function Admin() {
           )}
         </div>
       </div>
+      {pendingDelete && (
+        <div className="resume-overlay" role="dialog" aria-modal="true">
+          <div className="resume-card">
+            <p className="resume-greeting">are you sure you want to remove <strong>{pendingDelete.player_name}</strong> from the hunt??</p>
+            <div className="resume-actions">
+              <button className="btn-resume-continue" onClick={handleDeleteEntry}>yep, bye!</button>
+              <button className="btn-resume-new" onClick={() => setPendingDelete(null)}>nvm</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -14,11 +14,18 @@ function parseUTC(s: string): Date {
   return new Date(s.endsWith('Z') || s.includes('+') ? s : s + 'Z')
 }
 
+function formatTimestamp(timeStr: string): string {
+  return parseUTC(timeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+}
+
 function formatDuration(startTime: string, completionTime: string): string {
-  const start = parseUTC(startTime).getTime()
-  const end = parseUTC(completionTime).getTime()
-  const mins = Math.round((end - start) / 60000)
-  return `${mins} min`
+  const secs = Math.round((parseUTC(completionTime).getTime() - parseUTC(startTime).getTime()) / 1000)
+  const h = Math.floor(secs / 3600)
+  const m = Math.floor((secs % 3600) / 60)
+  const s = secs % 60
+  if (h > 0) return `${h}h ${m}m ${s}s`
+  if (m > 0) return `${m}m ${s}s`
+  return `${s}s`
 }
 
 function sortEntries(entries: LeaderboardEntry[], col: SortCol, dir: SortDir): LeaderboardEntry[] {
@@ -72,7 +79,7 @@ export function LeaderboardModal({ isOpen, onClose }: Props) {
     <div className="leaderboard-overlay" role="dialog" aria-modal="true">
       <div className="leaderboard-card">
         <div className="leaderboard-header">
-          <h2 className="leaderboard-title">Leaderboard</h2>
+          <h2 className="leaderboard-title">leaderboard</h2>
           <button
             className="leaderboard-close"
             onClick={onClose}
@@ -104,6 +111,7 @@ export function LeaderboardModal({ isOpen, onClose }: Props) {
                   Progress{indicator('progress')}
                 </th>
                 <th>Started</th>
+                <th>Time</th>
               </tr>
             </thead>
             <tbody>
@@ -111,13 +119,14 @@ export function LeaderboardModal({ isOpen, onClose }: Props) {
                 <tr key={entry.session_id}>
                   <td>{entry.player_name}</td>
                   <td>
-                    {entry.completed ? 'Done!' : `Clue ${entry.clue_number}`}
+                    {entry.completed ? 'done!' : `clue ${entry.clue_number}`}
+                  </td>
+                  <td>
+                    {entry.start_time ? formatTimestamp(entry.start_time) : '—'}
                   </td>
                   <td>
                     {entry.completed && entry.start_time && entry.completion_time
                       ? formatDuration(entry.start_time, entry.completion_time)
-                      : entry.start_time
-                      ? `${Math.round((Date.now() - parseUTC(entry.start_time).getTime()) / 60000)} min ago`
                       : '—'}
                   </td>
                 </tr>

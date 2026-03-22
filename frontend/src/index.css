@@ -480,6 +480,56 @@ button:disabled {
   gap: 0.25rem;
 }
 
+.admin-page {
+  position: fixed;
+  inset: 0;
+  min-height: unset;
+  overflow-y: auto;
+}
+
+.admin-delete-btn {
+  background: transparent;
+  border: none;
+  color: rgba(245, 240, 232, 0.3);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.admin-delete-btn:hover {
+  color: #e8a0a0;
+  opacity: 1;
+}
+
+.admin-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-nav .btn-home {
+  position: static;
+}
+
+.admin-nav-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
 .game-page .clue-wrapper {
   flex: 0 1 auto;
   min-height: 0;
@@ -964,6 +1014,7 @@ button:disabled {
 }
 
 .resume-card {
+  font-family: 'Manrope', system-ui, sans-serif;
   background: #4a3528;
   border-radius: 20px;
   padding: 2rem 2rem 1.75rem;
@@ -1065,7 +1116,8 @@ button:disabled {
 }
 
 .name-input::placeholder {
-  opacity: 0.5;
+  color: var(--color-button);
+  opacity: 0.7;
 }
 
 .name-input:focus {
@@ -1142,6 +1194,7 @@ button:disabled {
 }
 
 .leaderboard-title {
+  font-family: 'Manrope', system-ui, sans-serif;
   font-size: 1.4rem;
   margin: 0;
 }

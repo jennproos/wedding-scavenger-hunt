@@ -54,16 +54,16 @@ export function Home() {
         <div className="resume-overlay" role="dialog" aria-modal="true">
           <div className="resume-card">
             {session?.player_name ? (
-              <p className="resume-greeting">Welcome back, {session.player_name}!</p>
+              <p className="resume-greeting">welcome back, {session.player_name}!</p>
             ) : (
-              <p className="resume-greeting">Welcome back!</p>
+              <p className="resume-greeting">welcome back!</p>
             )}
             <div className="resume-actions">
               <button className="btn-resume-continue" onClick={handleContinue}>
-                Continue the hunt
+                continue the hunt
               </button>
               <button className="btn-resume-new" onClick={handleNewHunt}>
-                Start a new hunt
+                start a new hunt
               </button>
             </div>
           </div>
