@@ -13,6 +13,10 @@ export function Final() {
   const [leaderboardOpen, setLeaderboardOpen] = useState(false)
 
   useEffect(() => {
+    if (!session?.completed) {
+      navigate('/', { replace: true })
+      return
+    }
     clearSession()
   }, [])
 
