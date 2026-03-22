@@ -423,14 +423,14 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 26% 22% 54% 11%;
-  font-size: clamp(0.68rem, 3.2vw, 1.1rem);
+  padding: 28% 22% 52% 11%;
+  font-size: clamp(0.9rem, 4.2vw, 1.45rem);
   color: #3b2a1e;
   line-height: 1.4;
   text-align: left;
   /* parallelogram: top-left, top-right, bottom-right, bottom-left */
   /* Y% = padding-% / 1.7 (card aspect ratio); bottom shifts ~8% right */
-  clip-path: polygon(11% 15%, 78% 15%, 86% 68%, 19% 68%);
+  clip-path: polygon(11% 15%, 78% 15%, 84% 68%, 17% 68%);
 }
 
 .clue-card-text p {

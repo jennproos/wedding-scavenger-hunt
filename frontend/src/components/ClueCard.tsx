@@ -52,7 +52,7 @@ export function ClueCard({ clue, isFinal }: ClueCardProps) {
       <div className="clue-card-fill" style={fillMask} />
       <div className="clue-card-text">
         {lines.map((line, i) => (
-          <p key={i} style={{ marginLeft: `${i * 4}%` }}>
+          <p key={i} style={{ marginLeft: `${i * 3}%` }}>
             {line}
             {isTyping && i === lines.length - 1 && <span className="typing-cursor" />}
           </p>
