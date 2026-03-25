@@ -1,6 +1,6 @@
 # Wedding Scavenger Hunt
 
-A wedding scavenger hunt web app for guests to play on their phones. Guests enter 4-digit codes printed on physical cards placed around the venue to progress through stages, with server-enforced ordering so no one can skip ahead. The final stage reveals a reward screen.
+A wedding scavenger hunt web app for guests to play on their phones. Guests enter their name, then enter 4-digit codes printed on physical cards placed around the venue to progress through stages, with server-enforced ordering so no one can skip ahead. The final stage reveals a reward screen. Completion times are tracked on a leaderboard.
 
 **Live Demo**: https://wedding.jennproos.com/
 
@@ -34,6 +34,10 @@ make deploy-frontend # build + upload frontend + CloudFront invalidation
 make deploy-backend  # SSH deploy backend + restart service
 make help          # list all targets
 ```
+
+### Admin page
+
+The admin page lives at `/admin`. It requires a password (set via `ADMIN_SECRET` env var on the backend) and lets you view and clear the leaderboard.
 
 ### Dev override panel
 
@@ -127,8 +131,5 @@ cdk diff
 cdk deploy
 ```
 
-For full infra details and post-deploy steps (HTTPS certbot, frontend bucket/distribution outputs, troubleshooting), see [infra/README.md](/Users/jenn.proos/Projects/Personal/wedding-scavenger-hunt/infra/README.md).
+For full infra details and post-deploy steps (HTTPS certbot, frontend bucket/distribution outputs, troubleshooting), see [infra/README.md](infra/README.md).
 
-## Name Ideas
-
-- What's in the mole hole?

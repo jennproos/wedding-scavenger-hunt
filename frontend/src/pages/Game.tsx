@@ -46,7 +46,6 @@ export function Game() {
 
   const closeCodeModal = useCallback(() => {
     setCodeModalOpen(false)
-    window.scrollTo(0, 0)
   }, [])
 
   const handleSuccessReady = useCallback(() => {

@@ -81,13 +81,13 @@ const STICKERS = [
   // Row 3 — center (~40-44%)
   { src: bird,       top: '42%', left: '3%',  size: 65,  rotate:  25, mobile: true  },
   { src: floral5,    top: '40%', left: '28%', size: 82,  rotate: -28, mobile: false },
-  { src: costume,    top: '45%', left: '44%', size: 64,  rotate: -14, mobile: true  },
+  { src: costume,    top: '28%', left: '88%', size: 64,  rotate:  15, mobile: true  },
   { src: bow,        top: '44%', left: '58%', size: 62,  rotate:  18, mobile: false },
   { src: candle,     top: '40%', left: '82%', size: 68,  rotate: -10, mobile: false },
   // Gap 3 (~49-58%)
   { src: tag2,       top: '48%', left: '6%',  size: 55,  rotate:  28, mobile: false },
   { src: floral7,    top: '51%', left: '20%', size: 74,  rotate:  20, mobile: false },
-  { src: groom,      top: '50%', left: '46%', size: 70,  rotate:  -6, mobile: true  },
+  { src: groom,      top: '58%', left: '6%',  size: 70,  rotate:  12, mobile: true  },
   { src: wreath4,    top: '52%', left: '70%', size: 78,  rotate:   8, mobile: false },
   { src: asset30,    top: '54%', left: '86%', size: 70,  rotate: -20, mobile: false },
   { src: groomBride2,top: '57%', left: '32%', size: 76,  rotate:  10, mobile: false },

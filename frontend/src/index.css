@@ -190,6 +190,7 @@ body:has(.game-page) .copyright {
   to   { opacity: 0.6; transform: translateY(0); }
 }
 
+
 @keyframes glow-pulse {
   0% {
     text-shadow:
@@ -405,7 +406,7 @@ button:disabled {
   object-fit: fill;
   display: block;
   filter: sepia(1) brightness(0.75);
-  opacity: 0.4;
+  opacity: 1;
   mix-blend-mode: multiply;
 }
 
@@ -837,7 +838,7 @@ button:disabled {
 }
 
 .clue-wrapper--fading-out {
-  animation: fade-out 0.4s ease-in forwards;
+  animation: fade-out 0.4s ease-in;
 }
 
 @keyframes fade-out {
