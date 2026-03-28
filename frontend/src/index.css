@@ -604,7 +604,7 @@ button:disabled {
   font-size: 5rem;
   letter-spacing: 0.15em;
   color: var(--color-button);
-  margin: 0;
+  margin: -1rem 0 0;
   line-height: 1.1;
 }
 
