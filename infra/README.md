@@ -84,6 +84,7 @@ When complete, the stack outputs the values you need for subsequent steps:
 | `FrontendBucketName` | `weddingscavengerhuntinfrast-frontendbucketefe2e19c-m2xx3fo8a4mt` |
 | `CloudFrontDistributionId` | `E3S1IB6803P3BA` |
 | `BackendInstanceId` | `i-04f511a9137ef2f5c` |
+| `SsmSetupInstructions` | The exact `aws ssm put-parameter` commands to run (see next section) |
 
 ---
 
@@ -91,7 +92,26 @@ When complete, the stack outputs the values you need for subsequent steps:
 
 These can't be automated by CDK and must be done manually after the first deploy.
 
-### 1. Verify the backend started correctly
+### 1. Set secrets in SSM Parameter Store
+
+Stage codes and the admin secret are stored in SSM Parameter Store — **not** in the CDK stack — so you can update them anytime without redeploying.
+
+Run these once after the first deploy, substituting the 4-digit codes you'll print on the venue cards:
+
+```bash
+aws ssm put-parameter --name /wedding-scavenger/stage-1-code --value 1234 --type String --overwrite
+aws ssm put-parameter --name /wedding-scavenger/stage-2-code --value 5678 --type String --overwrite
+aws ssm put-parameter --name /wedding-scavenger/stage-3-code --value 9012 --type String --overwrite
+aws ssm put-parameter --name /wedding-scavenger/stage-4-code --value 3456 --type String --overwrite
+aws ssm put-parameter --name /wedding-scavenger/stage-5-code --value 7890 --type String --overwrite
+aws ssm put-parameter --name /wedding-scavenger/admin-secret --value YOUR_SECRET --type SecureString --overwrite
+```
+
+> **Why not CDK?** If CDK managed these values, every `cdk deploy` would overwrite them back to placeholder values. Keeping them out of CDK means you're in full control.
+
+The `/wedding-scavenger/leaderboard-bucket` parameter is set automatically by CDK (it's just the S3 bucket name, not a secret).
+
+### 2. Verify the backend started correctly
 
 The EC2 user data script runs on first boot to clone the repo and start services. SSH in to confirm everything is running:
 
@@ -103,18 +123,29 @@ sudo systemctl status nginx
 
 Both should show `active (running)`. If either has failed, see **Troubleshooting** below.
 
-### 2. Enable HTTPS on the backend (certbot)
+### 3. Verify HTTPS on the backend (certbot)
 
-Once `wedding-api.jennproos.com` DNS has propagated (check with `dig wedding-api.jennproos.com`), run certbot on the instance:
+Certbot runs automatically during first boot via the user data script (DNS-01 challenge via Route 53). Check that it succeeded:
 
 ```bash
-sudo dnf install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d wedding-api.jennproos.com
+sudo cat /var/log/cloud-init-output.log | grep -A3 -i "successfully received"
+sudo ls /etc/letsencrypt/live/wedding-api.jennproos.com/
 ```
 
-Certbot will automatically update the nginx config and set up auto-renewal.
+You should see `fullchain.pem` and `privkey.pem`. If certbot failed, check the full log:
 
-### 3. Tighten the SSH security group rule
+```bash
+sudo tail -50 /var/log/cloud-init-output.log
+```
+
+If you need to run it manually:
+
+```bash
+sudo certbot certonly --dns-route53 --non-interactive --agree-tos --email noreply@jennproos.com -d wedding-api.jennproos.com
+sudo certbot install --nginx -d wedding-api.jennproos.com
+```
+
+### 4. Tighten the SSH security group rule
 
 The CDK stack opens port 22 to `0.0.0.0/0` for initial access. After deploying, restrict it to your IP:
 
@@ -122,7 +153,7 @@ AWS Console → EC2 → Security Groups → BackendSecurityGroup → Inbound rul
 
 Change the SSH rule source from `0.0.0.0/0` to `My IP`.
 
-### 4. Tighten CORS in the backend
+### 5. Tighten CORS in the backend
 
 Update `backend/main.py` to allow only your frontend domain:
 
@@ -132,7 +163,7 @@ allow_origins=["https://wedding.jennproos.com"],
 
 Then redeploy the backend (see below).
 
-### 5. Deploy the frontend
+### 6. Deploy the frontend
 
 ```bash
 cd frontend
@@ -158,6 +189,20 @@ aws cloudfront create-invalidation --distribution-id E3S1IB6803P3BA --paths "/*"
 ssh -i /path/to/wedding-hunt.pem ec2-user@wedding-api.jennproos.com
 cd app && git pull
 sudo systemctl restart scavenger
+```
+
+**Stage codes or admin secret** — update SSM, then restart the service (no redeploy, no SSH into the app needed):
+```bash
+# Update the value in SSM
+aws ssm put-parameter \
+  --name /wedding-scavenger/stage-1-code \
+  --value 4242 \
+  --type String \
+  --overwrite
+
+# Restart the service so it re-fetches from SSM
+ssh -i /path/to/wedding-hunt.pem ec2-user@wedding-api.jennproos.com \
+  "sudo systemctl restart scavenger"
 ```
 
 **Infrastructure changes** — re-run CDK:
@@ -195,10 +240,30 @@ cd app/backend
 pip3 install -r requirements.txt
 ```
 
-Write the systemd service (run as one unbroken line):
+Write the fetch-scavenger-config script and make it executable — use `sudo nano /usr/local/bin/fetch-scavenger-config` and paste the contents from `infra/infra/infra_stack.py` (the `SCRIPT` heredoc inside `_backend_user_data`). Then:
 
 ```bash
-printf '[Unit]\nDescription=Wedding Scavenger Hunt API\nAfter=network.target\n\n[Service]\nWorkingDirectory=/home/ec2-user/app/backend\nExecStart=/home/ec2-user/.local/bin/uvicorn main:app --host 127.0.0.1 --port 8000\nRestart=always\nUser=ec2-user\n\n[Install]\nWantedBy=multi-user.target\n' | sudo tee /etc/systemd/system/scavenger.service
+sudo chmod +x /usr/local/bin/fetch-scavenger-config
+sudo /usr/local/bin/fetch-scavenger-config
+```
+
+Write the systemd service using `sudo nano /etc/systemd/system/scavenger.service`:
+
+```
+[Unit]
+Description=Wedding Scavenger Hunt API
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ec2-user/app/backend
+ExecStartPre=+/usr/local/bin/fetch-scavenger-config
+ExecStart=/usr/local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+Restart=always
+User=ec2-user
+EnvironmentFile=/etc/scavenger.env
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 Write the nginx config (run as one unbroken line):
@@ -213,16 +278,6 @@ Start everything:
 sudo systemctl daemon-reload
 sudo systemctl enable --now scavenger
 sudo nginx -t && sudo systemctl enable --now nginx
-```
-
-### Uvicorn path
-
-pip3 installs uvicorn to `~/.local/bin/uvicorn` (`/home/ec2-user/.local/bin/uvicorn`), not `/usr/local/bin/uvicorn`. If the scavenger service fails with `status=203/EXEC`, the path in the service file is wrong. Fix with:
-
-```bash
-sudo sed -i '/ExecStart=/,/main:app/d' /etc/systemd/system/scavenger.service
-sudo sed -i '/WorkingDirectory/a ExecStart=/home/ec2-user/.local/bin/uvicorn main:app --host 127.0.0.1 --port 8000' /etc/systemd/system/scavenger.service
-sudo systemctl daemon-reload && sudo systemctl restart scavenger
 ```
 
 ---

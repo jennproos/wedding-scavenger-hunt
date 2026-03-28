@@ -1,4 +1,5 @@
 from aws_cdk import (
+    Aws,
     Stack,
     RemovalPolicy,
     CfnOutput,
@@ -10,6 +11,7 @@ from aws_cdk import (
     aws_route53 as route53,
     aws_route53_targets as targets,
     aws_certificatemanager as acm,
+    aws_ssm as ssm,
 )
 from constructs import Construct
 
@@ -20,6 +22,7 @@ FRONTEND_SUBDOMAIN = "wedding"         # → wedding.jennproos.com
 BACKEND_SUBDOMAIN = "wedding-api"      # → wedding-api.jennproos.com
 KEY_PAIR_NAME = "wedding-hunt"        # EC2 key pair name (create in AWS Console first)
 REPO_URL = "https://github.com/jennproos/wedding-scavenger-hunt.git"
+SSM_PREFIX = "/wedding-scavenger"
 # ──────────────────────────────────────────────────────────────────────────────
 
 
@@ -43,6 +46,50 @@ pip3 install -r requirements.txt
 # Install certbot with Route 53 DNS plugin for automated HTTPS
 pip3 install certbot certbot-nginx certbot-dns-route53
 
+# Script to fetch config from SSM Parameter Store and write /etc/scavenger.env.
+# Called once here and then by ExecStartPre on every service (re)start,
+# so restarting the service is enough to pick up any SSM changes.
+cat > /usr/local/bin/fetch-scavenger-config << 'SCRIPT'
+#!/bin/bash
+set -euo pipefail
+PARAM_PATH="{SSM_PREFIX}"
+ENV_FILE="/etc/scavenger.env"
+TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+REGION=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
+
+tmpfile=$(mktemp)
+trap 'rm -f "$tmpfile"' EXIT
+
+# Fetch all params under the prefix and convert to KEY=VALUE lines.
+# Parameter name /wedding-scavenger/stage-1-code becomes STAGE_1_CODE, etc.
+if aws ssm get-parameters-by-path \\
+        --path "$PARAM_PATH" \\
+        --with-decryption \\
+        --recursive \\
+        --region "$REGION" \\
+        --query "Parameters[*].[Name,Value]" \\
+        --output text 2>/dev/null \\
+        | while read -r name value; do
+            key=$(basename "$name" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+            printf '%s=%s\\n' "$key" "$value"
+          done > "$tmpfile" && [[ -s "$tmpfile" ]]; then
+    mv "$tmpfile" "$ENV_FILE"
+    chmod 600 "$ENV_FILE"
+    echo "SSM config written to $ENV_FILE"
+else
+    echo "Warning: SSM fetch returned no parameters or failed" >&2
+    if [[ -f "$ENV_FILE" ]]; then
+        echo "Using cached $ENV_FILE" >&2
+    else
+        touch "$ENV_FILE"
+    fi
+fi
+SCRIPT
+chmod +x /usr/local/bin/fetch-scavenger-config
+
+# Initial config fetch before service starts
+/usr/local/bin/fetch-scavenger-config
+
 # Systemd service for uvicorn
 cat > /etc/systemd/system/scavenger.service << 'EOF'
 [Unit]
@@ -51,16 +98,11 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/ec2-user/app/backend
+ExecStartPre=+/usr/local/bin/fetch-scavenger-config
 ExecStart=/usr/local/bin/uvicorn main:app --host 127.0.0.1 --port 8000
 Restart=always
 User=ec2-user
-Environment=STAGE_1_CODE=1111
-Environment=STAGE_2_CODE=2222
-Environment=STAGE_3_CODE=3333
-Environment=STAGE_4_CODE=4444
-Environment=STAGE_5_CODE=5555
-Environment=LEADERBOARD_BUCKET={leaderboard_bucket_name}
-Environment=ADMIN_SECRET=admin
+EnvironmentFile=/etc/scavenger.env
 
 [Install]
 WantedBy=multi-user.target
@@ -90,12 +132,11 @@ systemctl enable --now nginx
 # Obtain TLS certificate via Route 53 DNS challenge.
 # This works immediately — no need to wait for the A record to propagate
 # because the DNS-01 challenge writes a TXT record via the AWS API directly.
-certbot certonly \
-  --dns-route53 \
-  --dns-route53-propagation-seconds 30 \
-  --non-interactive \
-  --agree-tos \
-  --email noreply@{DOMAIN_NAME} \
+certbot certonly \\
+  --dns-route53 \\
+  --non-interactive \\
+  --agree-tos \\
+  --email noreply@{DOMAIN_NAME} \\
   -d {BACKEND_SUBDOMAIN}.{DOMAIN_NAME}
 
 # Swap nginx config to HTTPS, redirect HTTP → HTTPS
@@ -178,6 +219,28 @@ class WeddingScavengerHuntInfraStack(Stack):
             actions=["route53:ListHostedZones"],
             resources=["*"],
         ))
+
+        # SSM: read all parameters under /wedding-scavenger/ at runtime
+        instance_role.add_to_policy(iam.PolicyStatement(
+            actions=[
+                "ssm:GetParametersByPath",
+                "ssm:GetParameter",
+                "ssm:GetParameters",
+            ],
+            resources=[
+                f"arn:aws:ssm:{Aws.REGION}:{Aws.ACCOUNT_ID}:parameter{SSM_PREFIX}",
+                f"arn:aws:ssm:{Aws.REGION}:{Aws.ACCOUNT_ID}:parameter{SSM_PREFIX}/*",
+            ],
+        ))
+
+        # ── SSM parameter: leaderboard bucket name (CDK-managed, not a secret) ─
+        # Stage codes and ADMIN_SECRET are intentionally NOT managed here —
+        # set them manually so cdk deploy never overwrites them (see outputs below).
+        ssm.StringParameter(self, "LeaderboardBucketParam",
+            parameter_name=f"{SSM_PREFIX}/leaderboard-bucket",
+            string_value=leaderboard_bucket.bucket_name,
+            description="S3 bucket name for leaderboard data (set by CDK)",
+        )
 
         # ── S3 bucket for frontend static files ───────────────────────────────
         frontend_bucket = s3.Bucket(self, "FrontendBucket",
@@ -295,5 +358,18 @@ class WeddingScavengerHuntInfraStack(Stack):
         )
         CfnOutput(self, "LeaderboardBucketName",
             value=leaderboard_bucket.bucket_name,
-            description="S3 bucket for leaderboard data — set LEADERBOARD_BUCKET env var to this value",
+            description="S3 bucket for leaderboard data",
+        )
+        CfnOutput(self, "SsmSetupInstructions",
+            value=(
+                f"Run these once after deploy (stage codes are whatever you print on cards):\n"
+                f"aws ssm put-parameter --name {SSM_PREFIX}/stage-1-code --value 1234 --type String --overwrite\n"
+                f"aws ssm put-parameter --name {SSM_PREFIX}/stage-2-code --value 5678 --type String --overwrite\n"
+                f"aws ssm put-parameter --name {SSM_PREFIX}/stage-3-code --value 9012 --type String --overwrite\n"
+                f"aws ssm put-parameter --name {SSM_PREFIX}/stage-4-code --value 3456 --type String --overwrite\n"
+                f"aws ssm put-parameter --name {SSM_PREFIX}/stage-5-code --value 7890 --type String --overwrite\n"
+                f"aws ssm put-parameter --name {SSM_PREFIX}/admin-secret --value YOUR_SECRET --type SecureString --overwrite\n"
+                f"Then to apply: ssh into the instance and run: sudo systemctl restart scavenger"
+            ),
+            description="One-time SSM parameter setup — run after first deploy, then update anytime",
         )

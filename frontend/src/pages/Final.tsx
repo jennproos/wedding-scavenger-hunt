@@ -41,7 +41,7 @@ export function Final() {
         <img src={familyPhoto} className="final-photo" alt="The happy couple" />
         <h1 className="final-title">YOU DID IT! 🎉</h1>
         <p className="final-subtitle">Every clue cracked. Every code conquered.</p>
-        <p className="final-subtitle">The treasure is yours — if you dare open it.</p>
+        <p className="final-subtitle">The treasure is yours — one prize per guest!</p>
         <p className="treasure-label">The lock code is:</p>
         <p className="treasure-code">0509</p>
       </div>

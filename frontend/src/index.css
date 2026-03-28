@@ -99,7 +99,7 @@ body:has(.game-page) .copyright {
   }
   .sticker--mobile {
     display: block;
-    width: calc(var(--size) * 0.6);
+    width: calc(var(--size) * 0.75);
   }
 }
 
