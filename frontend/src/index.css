@@ -329,6 +329,7 @@ button {
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
+  touch-action: manipulation;
   transition: opacity 0.2s;
 }
 
@@ -1109,7 +1110,7 @@ button:disabled {
   border-radius: 12px;
   color: var(--color-text);
   font-family: 'Manrope', system-ui, sans-serif;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.04em;
   padding: 0.65rem 1.2rem;

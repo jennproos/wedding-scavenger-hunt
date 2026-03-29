@@ -74,8 +74,11 @@ const ROTATIONS = [
    15, -22,  10, -18,
 ]
 
-// Show ~half the stickers on mobile (alternating)
-const MOBILE_VISIBLE = new Set([0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26])
+// Show ~half the stickers on mobile, spread across all 4 columns and all vertical zones
+// top 0–33%:  0 (5%), 2 (4%), 3 (9%), 5 (19%)
+// top 33–67%: 8 (31%), 11 (39%), 13 (47%), 14 (55%), 16 (61%)
+// top 67–100%: 17 (68%), 23 (74%), 22 (80%), 20 (83%), 27 (96%)
+const MOBILE_VISIBLE = new Set([0, 2, 3, 5, 8, 11, 13, 14, 16, 17, 23, 22, 20, 27])
 
 const STICKERS = SOURCES.map((src, i) => {
   const col = i % 4

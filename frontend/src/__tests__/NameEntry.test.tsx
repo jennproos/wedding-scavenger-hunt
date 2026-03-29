@@ -68,6 +68,18 @@ test('submitting a valid name calls startGame and navigates to /game', async () 
   })
 })
 
+test('resets scroll to top before navigating to /game (iOS keyboard scroll fix)', async () => {
+  const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+  renderNameEntry()
+  fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Alice' } })
+  fireEvent.click(screen.getByRole('button', { name: /start the hunt/i }))
+  await waitFor(() => {
+    expect(screen.getByTestId('game-page')).toBeInTheDocument()
+  })
+  expect(scrollTo).toHaveBeenCalledWith(0, 0)
+  scrollTo.mockRestore()
+})
+
 test('submitting without a name shows an error and does not call startGame', async () => {
   renderNameEntry()
   fireEvent.click(screen.getByRole('button', { name: /start the hunt/i }))

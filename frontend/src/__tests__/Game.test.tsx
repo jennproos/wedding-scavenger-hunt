@@ -182,6 +182,13 @@ describe('final clue', () => {
   })
 })
 
+test('calls scrollTo(0,0) on mount to reset iOS viewport state after keyboard navigation', () => {
+  const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+  renderGame()
+  expect(scrollTo).toHaveBeenCalledWith(0, 0)
+  scrollTo.mockRestore()
+})
+
 describe('dev controls', () => {
   afterEach(() => {
     vi.unstubAllEnvs()

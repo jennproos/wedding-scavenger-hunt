@@ -42,6 +42,10 @@ export function NameEntry() {
         clue_number: 1,
         player_name: data.player_name,
       })
+      // Reset scroll before navigation so the iOS keyboard-induced scroll offset
+      // doesn't get locked by body { overflow: hidden } on the game page,
+      // which would cause touch events to be offset and buttons to be unresponsive.
+      window.scrollTo(0, 0)
       navigate('/game')
     } catch (err) {
       setLoading(false)
