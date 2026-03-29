@@ -2,6 +2,8 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { vi } from 'vitest'
 import { CodeInput } from '../components/CodeInput'
 
+afterEach(() => vi.useRealTimers())
+
 function fillDigits(inputs: HTMLElement[]) {
   fireEvent.change(inputs[0], { target: { value: '1' } })
   fireEvent.change(inputs[1], { target: { value: '4' } })
@@ -130,6 +132,14 @@ test('lock button loses lock-btn--entering class after 2600ms', async () => {
   await act(() => vi.advanceTimersByTimeAsync(2600))
   expect(button).not.toHaveClass('lock-btn--entering')
   vi.useRealTimers()
+})
+
+test('shows broken heart overlay after failed submission', async () => {
+  render(<CodeInput onSubmit={vi.fn().mockResolvedValue(false)} />)
+  const inputs = screen.getAllByRole('textbox')
+  fillDigits(inputs)
+  fireEvent.click(screen.getByRole('button', { name: /unlock/i }))
+  await waitFor(() => expect(screen.getByTestId('broken-heart')).toBeInTheDocument(), { timeout: 3000 })
 })
 
 test('pressing Enter with incomplete digits does not call onSubmit', () => {

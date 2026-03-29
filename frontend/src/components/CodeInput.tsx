@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { ChampagnePop } from './ChampagnePop'
+import { BrokenHeart } from './BrokenHeart'
 
 type Status = 'idle' | 'submitting' | 'success' | 'error' | 'incomplete'
 
@@ -43,6 +44,7 @@ export function CodeInput({ onSubmit, onSuccessReady }: CodeInputProps) {
   const [digits, setDigits] = useState(['', '', '', ''])
   const [status, setStatus] = useState<Status>('idle')
   const [showChampagne, setShowChampagne] = useState(false)
+  const [showBrokenHeart, setShowBrokenHeart] = useState(false)
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -96,7 +98,9 @@ export function CodeInput({ onSubmit, onSuccessReady }: CodeInputProps) {
       setStatus('idle')
     } else {
       setStatus('error')
-      await new Promise(r => setTimeout(r, 800))
+      setShowBrokenHeart(true)
+      await new Promise(r => setTimeout(r, 1400))
+      setShowBrokenHeart(false)
       setDigits(['', '', '', ''])
       setStatus('idle')
       inputRefs[0].current?.focus()
@@ -106,6 +110,7 @@ export function CodeInput({ onSubmit, onSuccessReady }: CodeInputProps) {
   return (
     <>
     {showChampagne && <ChampagnePop />}
+    {showBrokenHeart && <BrokenHeart />}
     <div className="code-input-wrapper">
       <div className="code-digits">
         {digits.map((digit, i) => (

@@ -10,7 +10,7 @@ import asset15 from '../assets/stickers/Asset 15wedding.svg'
 import asset18 from '../assets/stickers/Asset 18wedding.svg'
 import asset22 from '../assets/stickers/Asset 22wedding.svg'
 import asset23 from '../assets/stickers/Asset 23wedding.svg'
-import asset30 from '../assets/stickers/Asset 30wedding.svg'
+import asset60 from '../assets/stickers/Asset 60wedding.svg'
 import asset31 from '../assets/stickers/Asset 31wedding.svg'
 import asset36 from '../assets/stickers/Asset 36wedding.svg'
 import asset40 from '../assets/stickers/Asset 40wedding.svg'
@@ -32,7 +32,7 @@ const SOURCES = [
   asset4,  asset5,  asset6,  asset7,
   asset8,  asset9,  asset13, asset14,
   asset15, asset18, asset22, asset23,
-  asset30, asset31, asset36, asset40,
+  asset60, asset31, asset36, asset40,
   asset45, asset50, asset25, asset56,
   asset57, asset58, asset62, asset64,
   asset65, asset68, asset39, asset16,

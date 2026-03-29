@@ -121,9 +121,9 @@ body:has(.game-page) .copyright {
     max-width: 400px;
   }
   .clue-card-text {
-    padding: 17% 8% 54% 10%;
-    /* mobile: top=17%/1.7=10%H, bottom=(1-0.54/1.7)=68%H, shift 8% right */
-    clip-path: polygon(10% 10%, 90% 10%, 98% 68%, 18% 68%);
+    padding: 17% 8% 42% 10%;
+    /* mobile: top=17%/1.7=10%H, bottom=(1-0.42/1.7)=75%H, shift 8% right */
+    clip-path: polygon(10% 10%, 90% 10%, 98% 76%, 18% 76%);
   }
 }
 
@@ -425,14 +425,14 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 28% 22% 52% 11%;
-  font-size: clamp(0.9rem, 4.2vw, 1.45rem);
+  padding: 28% 22% 42% 11%;
+  font-size: clamp(0.95rem, 4.5vw, 1.15rem);
   color: #3b2a1e;
   line-height: 1.4;
   text-align: left;
   /* parallelogram: top-left, top-right, bottom-right, bottom-left */
   /* Y% = padding-% / 1.7 (card aspect ratio); bottom shifts ~8% right */
-  clip-path: polygon(11% 15%, 78% 15%, 84% 68%, 17% 68%);
+  clip-path: polygon(11% 15%, 78% 15%, 84% 76%, 17% 76%);
 }
 
 .clue-card-text p {
@@ -607,6 +607,21 @@ button:disabled {
   color: var(--color-button);
   margin: -1rem 0 0;
   line-height: 1.1;
+}
+
+@media (min-width: 600px) {
+  .final-title {
+    font-size: 1.8rem;
+  }
+  .final-subtitle {
+    font-size: 0.9rem;
+  }
+  .treasure-label {
+    font-size: 0.85rem;
+  }
+  .treasure-code {
+    font-size: 3.5rem;
+  }
 }
 
 .footer {
@@ -793,6 +808,63 @@ button:disabled {
 @keyframes particle-burst {
   0%   { transform: translate(0, 0) scale(1); opacity: 1; }
   100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* Broken heart */
+.broken-heart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.broken-heart-container {
+  display: grid;
+  animation: heart-rise 0.3s ease-out forwards;
+}
+
+.broken-heart-half {
+  grid-area: 1 / 1;
+  width: 150px;
+  height: auto;
+  filter: invert(1);
+}
+
+.broken-heart-left {
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+  animation: heart-break-left 1.1s ease-in 0.35s forwards;
+}
+
+.broken-heart-right {
+  clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+  animation: heart-break-right 1.1s ease-in 0.35s forwards;
+}
+
+@keyframes heart-rise {
+  0%   { transform: translateY(60px) scale(0.7); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes heart-break-left {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  15%  { transform: translate(-5px, 0) rotate(-8deg); opacity: 1; }
+  100% { transform: translate(-90px, 130px) rotate(-40deg); opacity: 0; }
+}
+
+@keyframes heart-break-right {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  15%  { transform: translate(5px, 0) rotate(8deg); opacity: 1; }
+  100% { transform: translate(90px, 130px) rotate(40deg); opacity: 0; }
+}
+
+.broken-heart-particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: particle-burst 0.65s ease-out 0.45s forwards;
 }
 
 /* Confetti */
@@ -1110,7 +1182,7 @@ button:disabled {
   border-radius: 12px;
   color: var(--color-text);
   font-family: 'Manrope', system-ui, sans-serif;
-  font-size: 16px;
+  font-size: max(16px, 1rem);
   font-weight: 500;
   letter-spacing: 0.04em;
   padding: 0.65rem 1.2rem;
