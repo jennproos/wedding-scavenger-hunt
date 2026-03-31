@@ -78,6 +78,21 @@ export async function clearLeaderboard(password: string): Promise<void> {
   if (!res.ok) throw new Error(`Clear failed: ${res.status}`)
 }
 
+export interface StageInfo {
+  stage: number
+  location: string
+  code: string
+}
+
+export async function fetchStages(password: string): Promise<StageInfo[]> {
+  const res = await fetch(`${API_URL}/admin/stages`, {
+    headers: { Authorization: `Bearer ${password}` },
+  })
+  if (res.status === 401) throw new ApiError(401, 'Incorrect password')
+  if (!res.ok) throw new Error(`Failed to fetch stages: ${res.status}`)
+  return res.json() as Promise<StageInfo[]>
+}
+
 export async function removeLeaderboardEntry(session_id: string): Promise<void> {
   await fetch(`${API_URL}/leaderboard/${session_id}`, { method: 'DELETE' })
 }

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword, removeLeaderboardEntry, ApiError } from '../api/client'
+import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword, removeLeaderboardEntry, fetchStages, ApiError } from '../api/client'
 import homeIcon from '../assets/stickers/Home.svg'
-import type { LeaderboardEntry } from '../api/client'
+import type { LeaderboardEntry, StageInfo } from '../api/client'
 
 type SortCol = 'name' | 'progress' | null
 type SortDir = 'asc' | 'desc'
@@ -47,6 +47,7 @@ export function Admin() {
   const [verifying, setVerifying] = useState(false)
 
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
+  const [stages, setStages] = useState<StageInfo[]>([])
   const [loading, setLoading] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [clearError, setClearError] = useState('')
@@ -70,7 +71,10 @@ export function Admin() {
   }
 
   useEffect(() => {
-    if (authedPassword) loadLeaderboard()
+    if (authedPassword) {
+      loadLeaderboard()
+      fetchStages(authedPassword).then(setStages)
+    }
   }, [authedPassword])
 
   async function handleEnter() {
@@ -257,6 +261,28 @@ export function Admin() {
           )}
         </div>
       </div>
+      {stages.length > 0 && (
+        <div className="leaderboard-card" style={{ width: '100%', maxWidth: 600, marginTop: '1.5rem' }}>
+          <table className="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Stage</th>
+                <th>Location</th>
+                <th>Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stages.map(s => (
+                <tr key={s.stage}>
+                  <td>{s.stage}</td>
+                  <td>{s.location}</td>
+                  <td style={{ fontFamily: 'monospace', letterSpacing: '0.1em' }}>{s.code}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       {pendingDelete && (
         <div className="resume-overlay" role="dialog" aria-modal="true">
           <div className="resume-card">

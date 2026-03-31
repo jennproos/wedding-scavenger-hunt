@@ -361,6 +361,53 @@ async def test_admin_ping_with_correct_password(client):
 
 
 @pytest.mark.anyio
+async def test_admin_stages_without_auth(client):
+    resp = await client.get("/admin/stages")
+    assert resp.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_admin_stages_with_wrong_password(client):
+    resp = await client.get("/admin/stages", headers={"Authorization": "Bearer wrong"})
+    assert resp.status_code == 401
+
+
+@pytest.mark.anyio
+async def test_admin_stages_returns_stage_data(client):
+    import os
+    os.environ["ADMIN_SECRET"] = "test-secret"
+    try:
+        resp = await client.get("/admin/stages", headers={"Authorization": "Bearer test-secret"})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert len(data) == 5
+        stage = data[0]
+        assert "stage" in stage
+        assert "location" in stage
+        assert "code" in stage
+        assert len(stage["code"]) == 4
+    finally:
+        del os.environ["ADMIN_SECRET"]
+
+
+@pytest.mark.anyio
+async def test_admin_stages_locations_correct(client):
+    import os
+    os.environ["ADMIN_SECRET"] = "test-secret"
+    try:
+        resp = await client.get("/admin/stages", headers={"Authorization": "Bearer test-secret"})
+        data = resp.json()
+        by_stage = {s["stage"]: s for s in data}
+        assert by_stage[1]["location"] == "card & gift table"
+        assert by_stage[2]["location"] == "altar pedestals"
+        assert by_stage[3]["location"] == "photo booth"
+        assert by_stage[4]["location"] == "dance floor"
+        assert by_stage[5]["location"] == "introvert alley"
+    finally:
+        del os.environ["ADMIN_SECRET"]
+
+
+@pytest.mark.anyio
 async def test_leaderboard_completed_entries_sorted_before_in_progress(client):
     from stage_data import stages
 

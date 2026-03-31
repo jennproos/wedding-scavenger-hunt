@@ -19,12 +19,12 @@ _STAGE_DEFINITIONS = {
     },
     2: {
         "clue": (
-            "Love takes bravery — this much is true.\n"
-            "Sometimes it starts with a drink or two.\n"
-            "Find the place where glasses clink,\n"
-            "where laughter grows with every drink.\n"
-            "Raise a toast, don't spill a drop —\n"
-            "your next clue waits where spirits hop."
+            "Before the night, before the cheer,\n"
+            "two voices said the words most dear.\n"
+            "Where flowers stood and witnessed our vow,\n"
+            "the petals still remember how —\n"
+            "find the place where \"I do\" rang true,\n"
+            "your next clue blooms there, just for you."
         ),
         "next": 3,
     },
@@ -32,10 +32,10 @@ _STAGE_DEFINITIONS = {
         "clue": (
             "Some nights fade, but not this one.\n"
             "We're saving proof of all this fun.\n"
-            "Find the place where flashes gleam,\n"
-            "and silly faces live in between.\n"
-            "Strike a pose or sign your name —\n"
-            "the next step waits beside the frame."
+            "Find the booth where flashes gleam,\n"
+            "and memories print like a happy dream.\n"
+            "Strike a pose, take your shot —\n"
+            "your next clue waits right on the spot."
         ),
         "next": 4,
     },
@@ -45,19 +45,19 @@ _STAGE_DEFINITIONS = {
             "grace disappears and moves get soft.\n"
             "Find the floor where rhythm rules,\n"
             "where uncles spin and cousins twirl.\n"
-            "When the beat drops low and joy takes hold —\n"
-            "your final secret will unfold."
+            "Hit the floor, don't miss a beat —\n"
+            "your next clue hides beneath your feet."
         ),
         "next": 5,
     },
     5: {
         "clue": (
-            "Two tiny rulers of our domain,\n"
-            "soft of paw and loud of reign.\n"
-            "They supervise our every plan,\n"
-            "judge each guest and each dance span.\n"
-            "Seek the faces small yet grand —\n"
-            "the true heads of this wedding land."
+            "Not every love needs center stage —\n"
+            "some joy belongs on a quieter page.\n"
+            "Find the nook where hushed and still,\n"
+            "soft couches wait with cozy fill.\n"
+            "The calmest corner of this place —\n"
+            "your final answer ends the race."
         ),
         "next": None,
     },

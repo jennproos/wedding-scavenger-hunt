@@ -6,6 +6,14 @@ from services import session_service, stage_service, leaderboard_service
 
 router = APIRouter()
 
+_STAGE_LOCATIONS = {
+    1: "card & gift table",
+    2: "altar pedestals",
+    3: "photo booth",
+    4: "dance floor",
+    5: "introvert alley",
+}
+
 
 @router.post("/start", response_model=StartResponse)
 async def start(request: StartRequest):
@@ -90,6 +98,19 @@ async def clear_leaderboard(request: Request):
         raise HTTPException(status_code=401, detail="Unauthorized")
     leaderboard_service.clear_all()
     return {"ok": True}
+
+
+@router.get("/admin/stages")
+async def get_admin_stages(request: Request):
+    expected = os.environ.get("ADMIN_SECRET", "")
+    auth = request.headers.get("Authorization", "")
+    if not expected or not auth.startswith("Bearer ") or auth[len("Bearer "):] != expected:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    from stage_data import stages
+    return [
+        {"stage": stage_id, "location": _STAGE_LOCATIONS[stage_id], "code": stage["code"]}
+        for stage_id, stage in stages.items()
+    ]
 
 
 @router.get("/admin/ping")

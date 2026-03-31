@@ -1024,7 +1024,8 @@ button:disabled {
 .code-entry-sheet {
   width: 100%;
   max-width: 340px;
-  background: #3a2518;
+  background: rgba(245, 234, 212, 0.95);
+  color: #2c1a0e;
   border-radius: 20px;
   padding: 1.5rem 1.5rem 2rem;
   display: flex;
@@ -1043,7 +1044,7 @@ button:disabled {
   align-self: flex-end;
   background: transparent;
   border: none;
-  color: rgba(245, 240, 232, 0.4);
+  color: rgba(44, 26, 14, 0.4);
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
@@ -1051,18 +1052,26 @@ button:disabled {
 }
 
 .code-entry-close:hover {
-  color: rgba(245, 240, 232, 0.7);
+  color: rgba(44, 26, 14, 0.7);
 }
 
 /* Prevent staggered page-load animations from firing inside the sheet */
 .code-entry-sheet .code-digit {
   animation: none !important;
   opacity: 1 !important;
+  color: #f5ead4;
+  background-color: #3b2a1e;
+  border-color: rgba(245, 234, 212, 0.2);
+}
+
+.code-entry-sheet .code-digit:focus {
+  border-color: rgba(245, 234, 212, 0.6);
 }
 
 .code-entry-sheet .error-message {
   animation: none !important;
   opacity: 1 !important;
+  color: #7a3a2a;
 }
 
 @keyframes fall {
@@ -1091,7 +1100,8 @@ button:disabled {
 
 .resume-card {
   font-family: 'Manrope', system-ui, sans-serif;
-  background: #4a3528;
+  background: rgba(245, 234, 212, 0.95);
+  color: #2c1a0e;
   border-radius: 20px;
   padding: 2rem 2rem 1.75rem;
   width: 100%;
@@ -1136,8 +1146,8 @@ button:disabled {
 
 .btn-resume-new {
   background: transparent;
-  color: var(--color-text);
-  border: 2px solid rgba(245, 240, 232, 0.25);
+  color: #2c1a0e;
+  border: 2px solid rgba(44, 26, 14, 0.25);
   border-radius: 12px;
   padding: 0.75rem 1.5rem;
   font-size: 0.95rem;
@@ -1252,7 +1262,8 @@ button:disabled {
 }
 
 .leaderboard-card {
-  background: #4a3528;
+  background: rgba(245, 234, 212, 0.95);
+  color: #2c1a0e;
   border-radius: 16px;
   padding: 1.5rem;
   width: 100%;
@@ -1278,6 +1289,7 @@ button:disabled {
 .admin-refresh-btn {
   background: transparent;
   border: none;
+  color: #3b2a1e;
   font-size: 1.7rem;
   padding: 0.2rem 0.4rem;
   border-radius: 6px;
@@ -1340,12 +1352,12 @@ button:disabled {
   letter-spacing: 0.06em;
   font-size: 0.75rem;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(245, 240, 232, 0.15);
+  border-bottom: 1px solid rgba(44, 26, 14, 0.15);
 }
 
 .leaderboard-table td {
   padding: 0.5rem 0.6rem;
-  border-bottom: 1px solid rgba(245, 240, 232, 0.07);
+  border-bottom: 1px solid rgba(44, 26, 14, 0.07);
   vertical-align: middle;
   text-align: left;
 }

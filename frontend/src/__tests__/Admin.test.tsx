@@ -5,6 +5,8 @@ vi.mock('../api/client', () => ({
   fetchLeaderboard: vi.fn(),
   clearLeaderboard: vi.fn(),
   verifyAdminPassword: vi.fn(),
+  fetchStages: vi.fn(),
+  removeLeaderboardEntry: vi.fn(),
   ApiError: class ApiError extends Error {
     status: number
     constructor(status: number, message: string) {
@@ -20,7 +22,15 @@ vi.mock('react-router-dom', () => ({
 }))
 
 import { Admin } from '../pages/Admin'
-import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword } from '../api/client'
+import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword, fetchStages } from '../api/client'
+
+const mockStages = [
+  { stage: 1, location: 'Card & gift table', code: '1489' },
+  { stage: 2, location: 'Altar pedestals', code: '8183' },
+  { stage: 3, location: 'Photo booth', code: '2819' },
+  { stage: 4, location: 'Dance floor', code: '6311' },
+  { stage: 5, location: 'Introvert alley', code: '9042' },
+]
 
 const mockEntries = [
   {
@@ -53,6 +63,8 @@ beforeEach(() => {
   vi.mocked(fetchLeaderboard).mockReset()
   vi.mocked(clearLeaderboard).mockReset()
   vi.mocked(verifyAdminPassword).mockReset()
+  vi.mocked(fetchStages).mockReset()
+  vi.mocked(fetchStages).mockResolvedValue([])
   mockNavigate.mockReset()
 })
 
@@ -230,4 +242,17 @@ test('refetches leaderboard on success', async () => {
   await waitFor(() => {
     expect(fetchLeaderboard).toHaveBeenCalledTimes(2)
   })
+})
+
+test('shows stages table with location and code after auth', async () => {
+  vi.mocked(fetchLeaderboard).mockResolvedValue([])
+  vi.mocked(fetchStages).mockResolvedValue(mockStages)
+  render(<Admin />)
+  await authenticate()
+  await waitFor(() => expect(screen.getByText('card & gift table')).toBeInTheDocument())
+  expect(screen.getByText('altar pedestals')).toBeInTheDocument()
+  expect(screen.getByText('photo booth')).toBeInTheDocument()
+  expect(screen.getByText('dance floor')).toBeInTheDocument()
+  expect(screen.getByText('introvert alley')).toBeInTheDocument()
+  expect(screen.getByText('1489')).toBeInTheDocument()
 })
