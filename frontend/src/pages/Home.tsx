@@ -44,7 +44,7 @@ export function Home() {
     <div className={`page home-page${fadingOut ? ' fading-out' : ''}`}>
       <div className="home-hero">
         <p className="home-date">May 9, 2026</p>
-        <h1 className="home-names">Jenn &amp; Cole</h1>
+        <h1 className="home-names">Jenn &amp; Cole's</h1>
         <p className="home-subtitle">Wedding Scavenger Hunt</p>
       </div>
       <button className={`btn-start${nudging ? ' btn-start--nudging' : ''}`} onClick={handleStart}>

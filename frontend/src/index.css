@@ -112,7 +112,7 @@ body:has(.game-page) .copyright {
     gap: 0rem;
   }
   .game-page .clue-wrapper{
-    margin-top: -1rem;
+    margin-top: -2rem;
   }
   .game-input-area {
     margin-top: -1.25rem;
@@ -345,7 +345,6 @@ button:hover {
   padding: 0;
   margin-top: -1rem;
   cursor: pointer;
-  opacity: 0.8;
   animation:
     fade-in-dimmer 1s ease-out 2.6s both,
     btn-idle-wiggle 3s ease-in-out 3.9s infinite;
@@ -479,7 +478,7 @@ button:disabled {
   overflow: hidden;
   justify-content: flex-start;
   padding-top: 0;
-  gap: 0.25rem;
+  gap: 0rem;
 }
 
 .admin-page {

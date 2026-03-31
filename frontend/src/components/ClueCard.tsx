@@ -14,7 +14,6 @@ export function ClueCard({ clue, isFinal }: ClueCardProps) {
   const [isTyping, setIsTyping] = useState(false)
 
   useEffect(() => {
-    if (isFinal) return
     setDisplayed('')
     setIsTyping(false)
     let intervalId: ReturnType<typeof setInterval> | null = null
@@ -44,7 +43,7 @@ export function ClueCard({ clue, isFinal }: ClueCardProps) {
     maskSize: '100% 100%',
   }
 
-  const lines = (isFinal ? clue : displayed).split('\n')
+  const lines = displayed.split('\n')
 
   return (
     <div className="clue-card">
