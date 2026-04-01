@@ -405,7 +405,6 @@ button:disabled {
   aspect-ratio: 1 / 1.7;
   object-fit: fill;
   display: block;
-  filter: sepia(1) brightness(0.75);
   opacity: 1;
   mix-blend-mode: multiply;
 }
@@ -424,7 +423,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 28% 22% 42% 11%;
+  padding: 28% 22% 42% 13%;
   font-size: clamp(0.95rem, 4.5vw, 1.15rem);
   color: #3b2a1e;
   line-height: 1.4;
@@ -486,12 +485,13 @@ button:disabled {
   inset: 0;
   min-height: unset;
   overflow-y: auto;
+  padding-top: calc(5.5rem + env(safe-area-inset-top, 0px));
 }
 
 .admin-delete-btn {
   background: transparent;
   border: none;
-  color: rgba(245, 240, 232, 0.3);
+  color: rgba(59, 42, 30, 0.3);
   font-size: 0.75rem;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
@@ -1009,6 +1009,16 @@ button:disabled {
   border-color: rgba(245, 240, 232, 0.45);
 }
 
+.leaderboard-card .btn-enter-code {
+  color: rgba(59, 42, 30, 0.65);
+  border-color: rgba(59, 42, 30, 0.22);
+}
+
+.leaderboard-card .btn-enter-code:hover {
+  color: rgba(59, 42, 30, 0.9);
+  border-color: rgba(59, 42, 30, 0.45);
+}
+
 /* Code entry modal */
 .code-entry-overlay {
   position: fixed;
@@ -1317,6 +1327,7 @@ button:disabled {
 .leaderboard-close {
   background: transparent;
   border: none;
+  color: #3b2a1e;
   font-size: 1.1rem;
   padding: 0.3rem 0.6rem;
   border-radius: 8px;
