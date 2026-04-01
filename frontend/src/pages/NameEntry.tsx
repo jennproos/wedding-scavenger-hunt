@@ -45,7 +45,12 @@ export function NameEntry() {
       // Reset scroll before navigation so the iOS keyboard-induced scroll offset
       // doesn't get locked by body { overflow: hidden } on the game page,
       // which would cause touch events to be offset and buttons to be unresponsive.
+      // We wait one animation frame after scrollTo so the browser can process the
+      // scroll before React mounts the fixed-layout game page (iOS Chrome bug).
       window.scrollTo(0, 0)
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+      await new Promise(r => requestAnimationFrame(r))
       navigate('/game')
     } catch (err) {
       setLoading(false)
