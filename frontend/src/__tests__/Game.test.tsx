@@ -31,10 +31,10 @@ vi.mock('../api/client', () => ({
 import { Game } from '../pages/Game'
 import { scanToken, devAdvance, devBack, backClue } from '../api/client'
 
-function renderGame(clue = 'Find the gift table', { is_final_clue = false } = {}) {
+function renderGame(clue = 'Find the gift table') {
   localStorage.setItem(
     'scavenger_session',
-    JSON.stringify({ session_id: 'sess-1', current_clue: clue, is_final_clue, completed: false }),
+    JSON.stringify({ session_id: 'sess-1', current_clue: clue, completed: false }),
   )
   return render(
     <MemoryRouter initialEntries={['/game']}>
@@ -162,25 +162,6 @@ test('navigates to /final when onSuccessReady is called after completing', async
   })
 })
 
-describe('final clue', () => {
-  test('does not render CodeInput when session is on final clue', () => {
-    renderGame('Find the cats', { is_final_clue: true })
-    expect(screen.queryByTestId('mock-code-input')).not.toBeInTheDocument()
-  })
-
-  test('renders claim button when session is on final clue', () => {
-    renderGame('Find the cats', { is_final_clue: true })
-    expect(screen.getByRole('button', { name: /claim/i })).toBeInTheDocument()
-  })
-
-  test('clicking claim navigates to /final', async () => {
-    renderGame('Find the cats', { is_final_clue: true })
-    fireEvent.click(screen.getByRole('button', { name: /claim/i }))
-    await waitFor(() => {
-      expect(screen.getByTestId('final-page')).toBeInTheDocument()
-    })
-  })
-})
 
 test('calls scrollTo(0,0) on mount to reset iOS viewport state after keyboard navigation', () => {
   const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})

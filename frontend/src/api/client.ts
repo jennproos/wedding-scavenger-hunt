@@ -11,7 +11,6 @@ export interface ScanResponse {
   message: string
   next_clue?: string
   completed: boolean
-  is_final_clue?: boolean
 }
 
 export interface LeaderboardEntry {
@@ -91,6 +90,12 @@ export async function fetchStages(password: string): Promise<StageInfo[]> {
   if (res.status === 401) throw new ApiError(401, 'Incorrect password')
   if (!res.ok) throw new Error(`Failed to fetch stages: ${res.status}`)
   return res.json() as Promise<StageInfo[]>
+}
+
+export async function checkSession(session_id: string): Promise<void> {
+  const res = await fetch(`${API_URL}/session/${session_id}`)
+  if (res.status === 404) throw new ApiError(404, 'Session not found')
+  if (!res.ok) throw new Error(`Check session failed: ${res.status}`)
 }
 
 export async function removeLeaderboardEntry(session_id: string): Promise<void> {

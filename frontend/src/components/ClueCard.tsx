@@ -6,10 +6,9 @@ const TYPING_DELAY_MS = 650
 
 interface ClueCardProps {
   clue: string
-  isFinal?: boolean
 }
 
-export function ClueCard({ clue, isFinal }: ClueCardProps) {
+export function ClueCard({ clue }: ClueCardProps) {
   const [displayed, setDisplayed] = useState('')
   const [isTyping, setIsTyping] = useState(false)
 
@@ -34,7 +33,7 @@ export function ClueCard({ clue, isFinal }: ClueCardProps) {
       if (intervalId) clearInterval(intervalId)
       setIsTyping(false)
     }
-  }, [clue, isFinal])
+  }, [clue])
 
   const fillMask = {
     WebkitMaskImage: `url(${scrollSrc})`,

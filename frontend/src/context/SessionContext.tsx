@@ -6,7 +6,6 @@ export interface SessionState {
   session_id: string
   current_clue: string
   completed: boolean
-  is_final_clue?: boolean
   clue_number?: number
   player_name?: string
 }

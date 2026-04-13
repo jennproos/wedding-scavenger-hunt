@@ -19,9 +19,3 @@ test('renders multiline clue text after typing completes', async () => {
     expect(screen.getByText(/Line two/)).toBeInTheDocument()
   }, { timeout: 5000 })
 })
-
-test('renders smiley face instead of clue text when isFinal', () => {
-  render(<ClueCard clue="Find the cats" isFinal />)
-  expect(screen.queryByText(/Find the cats/)).not.toBeInTheDocument()
-  expect(screen.getByTestId('clue-card-smiley')).toBeInTheDocument()
-})

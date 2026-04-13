@@ -38,7 +38,6 @@ export function NameEntry() {
         session_id: data.session_id,
         current_clue: data.clue_text,
         completed: false,
-        is_final_clue: false,
         clue_number: 1,
         player_name: data.player_name,
       })

@@ -73,7 +73,6 @@ async def scan(request: ScanRequest):
         success=True,
         completed=False,
         next_clue=next_clue,
-        is_final_clue=stage_service.is_final_stage(next_stage_id),
         message="Onward!",
     )
 
@@ -97,6 +96,7 @@ async def clear_leaderboard(request: Request):
     if not expected or not auth.startswith("Bearer ") or auth[len("Bearer "):] != expected:
         raise HTTPException(status_code=401, detail="Unauthorized")
     leaderboard_service.clear_all()
+    session_service.clear_all()
     return {"ok": True}
 
 
@@ -146,7 +146,6 @@ async def back(request: DevRequest):
         success=True,
         completed=False,
         next_clue=clue,
-        is_final_clue=stage_service.is_final_stage(prev_stage_id),
         message="Went back!",
     )
 
@@ -188,7 +187,6 @@ async def dev_advance(request: DevRequest):
         success=True,
         completed=False,
         next_clue=next_clue,
-        is_final_clue=False,
         message="[DEV] Skipped!",
     )
 

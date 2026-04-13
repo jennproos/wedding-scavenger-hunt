@@ -42,7 +42,8 @@ export function Final() {
         <h1 className="final-title">YOU DID IT! 🎉</h1>
         <p className="final-subtitle">The treasure is yours — one prize per guest!</p>
         <p className="treasure-label">The lock code is:</p>
-        <p className="treasure-code">0509</p>
+        <p className="treasure-code">125</p>
+        <p className="final-reminder">Please relock the padlock after claiming your prize!</p>
       </div>
     </div>
   )

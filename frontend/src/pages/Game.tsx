@@ -16,7 +16,7 @@ export function Game() {
   const [fadingOut, setFadingOut] = useState(false)
   const [leaderboardOpen, setLeaderboardOpen] = useState(false)
   const [codeModalOpen, setCodeModalOpen] = useState(false)
-  const pendingRef = useRef<{ completed: boolean; next_clue?: string; is_final_clue?: boolean; session: typeof session } | null>(null)
+  const pendingRef = useRef<{ completed: boolean; next_clue?: string; session: typeof session } | null>(null)
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
@@ -30,7 +30,7 @@ export function Game() {
       try {
         const result = await scanToken(session.session_id, code)
         if (!result.success) return false
-        pendingRef.current = { completed: result.completed, next_clue: result.next_clue, is_final_clue: result.is_final_clue, session }
+        pendingRef.current = { completed: result.completed, next_clue: result.next_clue, session }
         return true
       } catch (err) {
         if (err instanceof ApiError && err.status === 404) {
@@ -64,7 +64,6 @@ export function Game() {
         setSession({
           ...pending.session!,
           current_clue: pending.next_clue!,
-          is_final_clue: pending.is_final_clue,
           clue_number: (pending.session!.clue_number ?? 1) + 1,
         })
       }, 400)
@@ -110,7 +109,6 @@ export function Game() {
       setSession({
         ...session,
         current_clue: result.next_clue!,
-        is_final_clue: result.is_final_clue,
         clue_number: Math.max(1, (session.clue_number ?? 1) - 1),
       })
     }, 400)
@@ -146,7 +144,7 @@ export function Game() {
         <span className="clue-number-word">clue</span>{session.clue_number ?? 1}
       </p>
       <div className={`clue-wrapper${fadingOut ? ' clue-wrapper--fading-out' : ''}`}>
-        <ClueCard key={clueKey} clue={session.current_clue} isFinal={session.is_final_clue} />
+        <ClueCard key={clueKey} clue={session.current_clue} />
       </div>
       <div className="game-input-area">
         <button className="btn-enter-code" onClick={() => setCodeModalOpen(true)}>

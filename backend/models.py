@@ -32,7 +32,6 @@ class ScanResponse(BaseModel):
     message: str
     next_clue: Optional[str] = None
     completed: bool = False
-    is_final_clue: bool = False
 
 
 class LeaderboardEntry(BaseModel):

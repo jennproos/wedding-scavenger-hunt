@@ -24,3 +24,7 @@ def get_session(session_id: str) -> Optional[Session]:
 
 def update_session(session: Session) -> None:
     _sessions[session.session_id] = session
+
+
+def clear_all() -> None:
+    _sessions.clear()

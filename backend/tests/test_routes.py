@@ -178,25 +178,6 @@ async def test_back_on_stage_1_returns_failure(client):
 
 
 @pytest.mark.anyio
-async def test_scan_advancing_to_final_stage_sets_is_final_clue(client):
-    from stage_data import stages
-    start = await client.post("/start", json={"player_name": "Alice"})
-    session_id = start.json()["session_id"]
-
-    for stage_id in range(1, 4):
-        token = stages[stage_id]["code"]
-        await client.post("/scan", json={"session_id": session_id, "token": token})
-
-    # Advance from stage 4 → stage 5 (the final stage)
-    token = stages[4]["code"]
-    scan = await client.post("/scan", json={"session_id": session_id, "token": token})
-    data = scan.json()
-    assert data["success"] is True
-    assert data["completed"] is False
-    assert data["is_final_clue"] is True
-
-
-@pytest.mark.anyio
 async def test_complete_all_stages_reaches_completed(client):
     from stage_data import stages
     start = await client.post("/start", json={"player_name": "Alice"})
@@ -403,6 +384,28 @@ async def test_admin_stages_locations_correct(client):
         assert by_stage[3]["location"] == "photo booth"
         assert by_stage[4]["location"] == "dance floor"
         assert by_stage[5]["location"] == "introvert alley"
+    finally:
+        del os.environ["ADMIN_SECRET"]
+
+
+@pytest.mark.anyio
+async def test_clear_leaderboard_also_invalidates_sessions(client):
+    import os
+    os.environ["ADMIN_SECRET"] = "test-secret"
+    try:
+        r = await client.post("/start", json={"player_name": "Alice"})
+        session_id = r.json()["session_id"]
+
+        # Verify session exists before clearing
+        check = await client.get(f"/session/{session_id}")
+        assert check.status_code == 200
+
+        # Clear leaderboard (admin action)
+        await client.delete("/leaderboard", headers={"Authorization": "Bearer test-secret"})
+
+        # Session should now be gone
+        check2 = await client.get(f"/session/{session_id}")
+        assert check2.status_code == 404
     finally:
         del os.environ["ADMIN_SECRET"]
 

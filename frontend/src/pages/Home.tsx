@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { removeLeaderboardEntry } from '../api/client'
+import { removeLeaderboardEntry, checkSession, ApiError } from '../api/client'
 import { useSession } from '../context/SessionContext'
 import heartsPiercedByAnArrow from '../assets/stickers/Hearts_Pierced_By_An_Arrow.svg'
 
@@ -15,7 +15,17 @@ export function Home() {
 
   async function handleStart() {
     if (hasSession) {
-      setShowModal(true)
+      try {
+        await checkSession(session!.session_id)
+        setShowModal(true)
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 404) {
+          clearSession()
+          setFadingOut(true)
+          await new Promise(resolve => setTimeout(resolve, 300))
+          navigate('/name')
+        }
+      }
       return
     }
     setNudging(true)

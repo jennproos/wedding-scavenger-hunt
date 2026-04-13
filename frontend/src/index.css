@@ -608,6 +608,15 @@ button:disabled {
   line-height: 1.1;
 }
 
+.final-reminder {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  opacity: 0.65;
+  margin: 0.75rem 0 0;
+  letter-spacing: 0.03em;
+}
+
 @media (min-width: 600px) {
   .final-title {
     font-size: 1.8rem;
