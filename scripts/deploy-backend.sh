@@ -26,7 +26,7 @@ ssh "${SSH_ARGS[@]}" "$REMOTE_USER@$REMOTE_HOST" \
    cd '$APP_DIR'; \
    git fetch origin; \
    git checkout '$BRANCH'; \
-   git pull --ff-only origin '$BRANCH'; \
+   git reset --hard origin/'$BRANCH'; \
    pip3 install --user -q -r backend/requirements.txt; \
    sudo systemctl restart '$SERVICE_NAME'; \
    sudo systemctl --no-pager status '$SERVICE_NAME' | head -n 20"
