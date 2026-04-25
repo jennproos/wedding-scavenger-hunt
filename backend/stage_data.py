@@ -23,8 +23,8 @@ _STAGE_DEFINITIONS = {
             "two voices made a promise deep.\n"
             "Walk the aisle to where it ends,\n"
             "where \"I do\" rang out, and a new life begins —\n"
-            "find the spot where we stood and swore,\n"
-            "your next clue waits at that very floor."
+            "find the spot where we sealed our fate,\n"
+            "your next clue waits right there in wait."
         ),
         "next": 3,
     },
