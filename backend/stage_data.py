@@ -12,19 +12,19 @@ _STAGE_DEFINITIONS = {
             "there's a place for words sincere.\n"
             "Where envelopes gather, stacked with care,\n"
             "and thoughtful notes are waiting there.\n"
-            "Our story begins where kindness stays —\n"
+            "Our story begins where kindness stays,\n"
             "start your quest where gratitude lays."
         ),
         "next": 2,
     },
     2: {
         "clue": (
-            "Before the night, before the cheer,\n"
-            "two voices said the words most dear.\n"
-            "Where flowers stood and witnessed our vow,\n"
-            "the petals still remember how —\n"
-            "find the place where \"I do\" rang true,\n"
-            "your next clue blooms there, just for you."
+            "Before the night was yours to keep,\n"
+            "two voices made a promise deep.\n"
+            "Walk the aisle to where it ends,\n"
+            "where \"I do\" rang out, and a new life begins —\n"
+            "find the spot where we stood and swore,\n"
+            "your next clue waits at that very floor."
         ),
         "next": 3,
     },
@@ -41,23 +41,23 @@ _STAGE_DEFINITIONS = {
     },
     4: {
         "clue": (
-            "When the music starts and shoes come off,\n"
-            "grace disappears and moves get soft.\n"
-            "Find the floor where rhythm rules,\n"
-            "where uncles spin and cousins twirl.\n"
-            "Hit the floor, don't miss a beat —\n"
-            "your next clue hides beneath your feet."
+            "Not every memory needs a photograph —\n"
+            "some live in a song, a spin, a laugh.\n"
+            "Find the place where the rhythm takes hold,\n"
+            "where the night gets loud and the dancing gets bold —\n"
+            "seek the speaker sitting low beside the beat —\n"
+            "your next clue crowns it, right at your feet."
         ),
         "next": 5,
     },
     5: {
         "clue": (
-            "Not every love needs center stage —\n"
-            "some joy belongs on a quieter page.\n"
-            "Find the nook where hushed and still,\n"
-            "soft couches wait with cozy fill.\n"
-            "The calmest corner of this place —\n"
-            "your final answer ends the race."
+            "Not every guest wants the spotlight's glow —\n"
+            "some find the places only insiders know.\n"
+            "Find the lounge where the bathrooms meet,\n"
+            "soft couches waiting, a cozy retreat.\n"
+            "Settle in, you've almost won —\n"
+            "your final answer says you're done."
         ),
         "next": None,
     },

@@ -8,9 +8,9 @@ router = APIRouter()
 
 _STAGE_LOCATIONS = {
     1: "card & gift table",
-    2: "altar pedestals",
+    2: "end of the aisle",
     3: "photo booth",
-    4: "dance floor",
+    4: "DJ speakers",
     5: "introvert alley",
 }
 

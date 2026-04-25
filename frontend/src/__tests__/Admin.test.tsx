@@ -25,11 +25,11 @@ import { Admin } from '../pages/Admin'
 import { fetchLeaderboard, clearLeaderboard, verifyAdminPassword, fetchStages } from '../api/client'
 
 const mockStages = [
-  { stage: 1, location: 'Card & gift table', code: '1489' },
-  { stage: 2, location: 'Altar pedestals', code: '8183' },
-  { stage: 3, location: 'Photo booth', code: '2819' },
-  { stage: 4, location: 'Dance floor', code: '6311' },
-  { stage: 5, location: 'Introvert alley', code: '9042' },
+  { stage: 1, location: 'card & gift table', code: '1489' },
+  { stage: 2, location: 'end of the aisle', code: '8183' },
+  { stage: 3, location: 'photo booth', code: '2819' },
+  { stage: 4, location: 'DJ speakers', code: '6311' },
+  { stage: 5, location: 'introvert alley', code: '9042' },
 ]
 
 const mockEntries = [
@@ -250,9 +250,9 @@ test('shows stages table with location and code after auth', async () => {
   render(<Admin />)
   await authenticate()
   await waitFor(() => expect(screen.getByText('card & gift table')).toBeInTheDocument())
-  expect(screen.getByText('altar pedestals')).toBeInTheDocument()
+  expect(screen.getByText('end of the aisle')).toBeInTheDocument()
   expect(screen.getByText('photo booth')).toBeInTheDocument()
-  expect(screen.getByText('dance floor')).toBeInTheDocument()
+  expect(screen.getByText('DJ speakers')).toBeInTheDocument()
   expect(screen.getByText('introvert alley')).toBeInTheDocument()
   expect(screen.getByText('1489')).toBeInTheDocument()
 })

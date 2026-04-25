@@ -380,9 +380,9 @@ async def test_admin_stages_locations_correct(client):
         data = resp.json()
         by_stage = {s["stage"]: s for s in data}
         assert by_stage[1]["location"] == "card & gift table"
-        assert by_stage[2]["location"] == "altar pedestals"
+        assert by_stage[2]["location"] == "end of the aisle"
         assert by_stage[3]["location"] == "photo booth"
-        assert by_stage[4]["location"] == "dance floor"
+        assert by_stage[4]["location"] == "DJ speakers"
         assert by_stage[5]["location"] == "introvert alley"
     finally:
         del os.environ["ADMIN_SECRET"]
