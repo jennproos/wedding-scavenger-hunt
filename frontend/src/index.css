@@ -423,7 +423,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 28% 22% 42% 13%;
+  padding: 23% 22% 42% 13%;
   font-size: clamp(0.95rem, 4.5vw, 1.15rem);
   color: #3b2a1e;
   line-height: 1.4;
@@ -613,7 +613,7 @@ button:disabled {
   font-size: 0.85rem;
   font-style: italic;
   opacity: 0.65;
-  margin: 0.75rem 0 0;
+  margin: -0.5rem 0 0;
   letter-spacing: 0.03em;
 }
 
