@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClueCard } from '../components/ClueCard'
 import { CodeInput } from '../components/CodeInput'
@@ -17,9 +17,23 @@ export function Game() {
   const [leaderboardOpen, setLeaderboardOpen] = useState(false)
   const [codeModalOpen, setCodeModalOpen] = useState(false)
   const pendingRef = useRef<{ completed: boolean; next_clue?: string; session: typeof session } | null>(null)
+  const [showRefreshHint, setShowRefreshHint] = useState(false)
+  const hasInteracted = useRef(false)
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!hasInteracted.current) setShowRefreshHint(true)
+    }, 10_000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const markInteracted = useCallback(() => {
+    hasInteracted.current = true
+    setShowRefreshHint(false)
   }, [])
 
   const DEV = import.meta.env.VITE_DEV_OVERRIDE === 'true'
@@ -123,7 +137,7 @@ export function Game() {
   }
 
   return (
-    <div className="page game-page">
+    <div className="page game-page" onClick={markInteracted}>
       <div className="btn-nav">
         <div className="btn-nav-left">
           <button className="btn-home" onClick={handleBack} aria-label="Back">
@@ -167,6 +181,11 @@ export function Game() {
         </div>
       )}
       <LeaderboardModal isOpen={leaderboardOpen} onClose={() => setLeaderboardOpen(false)} />
+      {showRefreshHint && (
+        <p className="refresh-hint" role="status">
+          having trouble? try refreshing the page
+        </p>
+      )}
     </div>
   )
 }

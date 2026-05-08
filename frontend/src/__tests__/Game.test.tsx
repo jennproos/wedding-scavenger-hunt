@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { vi } from 'vitest'
 import { SessionProvider } from '../context/SessionContext'
@@ -168,6 +168,30 @@ test('calls scrollTo(0,0) on mount to reset iOS viewport state after keyboard na
   renderGame()
   expect(scrollTo).toHaveBeenCalledWith(0, 0)
   scrollTo.mockRestore()
+})
+
+describe('idle refresh hint', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  test('shows a refresh hint after 10 seconds without any interaction', () => {
+    renderGame()
+    expect(screen.queryByText(/try refreshing/i)).not.toBeInTheDocument()
+    act(() => { vi.advanceTimersByTime(10_000) })
+    expect(screen.getByText(/try refreshing/i)).toBeInTheDocument()
+  })
+
+  test('does not show the refresh hint if the user interacts before 10 seconds', () => {
+    renderGame()
+    act(() => { vi.advanceTimersByTime(3_000) })
+    fireEvent.click(screen.getByRole('button', { name: /enter code/i }))
+    act(() => { vi.advanceTimersByTime(8_000) })
+    expect(screen.queryByText(/try refreshing/i)).not.toBeInTheDocument()
+  })
 })
 
 describe('dev controls', () => {
